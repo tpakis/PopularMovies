@@ -15,16 +15,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.popularmovies.aithanasakis.popularmovies.BuildConfig;
 import com.popularmovies.aithanasakis.popularmovies.R;
 
 public class MainActivity extends AppCompatActivity {
 
     private StaggeredGridLayoutManager mStaggeredGridLayoutManager;
-
+    private String theMoviedBBApiKey;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        theMoviedBBApiKey = BuildConfig.THEMOVIEDB_API_KEY;
+        Toast.makeText(this,theMoviedBBApiKey,Toast.LENGTH_LONG).show();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -7,3 +7,5 @@
 /build
 /captures
 .externalNativeBuild
+#api keys
+api_keys.txt

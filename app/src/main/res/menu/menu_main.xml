@@ -5,11 +5,11 @@
     <item
         android:id="@+id/bt_settings"
         android:orderInCategory="100"
-        android:title="te"
+        android:title="@string/sort_by_rating"
         app:showAsAction="never" />
     <item
         android:id="@+id/bt_db_log"
         android:orderInCategory="100"
-        android:title="te"
+        android:title="@string/sort_by_popularity"
         app:showAsAction="never" />
 </menu>

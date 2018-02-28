@@ -1,5 +1,30 @@
 apply plugin: 'com.android.application'
 
+// getting api key
+// GV 21/02/2018
+def noKeyFound = '"NO_KEY_FOUND"'
+def theMovieDbApiKey = noKeyFound
+
+def sensitiveDataFile = file('../api_keys.txt')
+def Properties sensitiveData = new Properties()
+
+if (sensitiveDataFile.canRead()){
+    // Read the sensitive data from file sensitive_data.txt
+    sensitiveData.load(new FileInputStream(sensitiveDataFile))
+
+    if (sensitiveData != null) {
+        if (sensitiveData.containsKey('themoviedbkey')) {
+            theMovieDbApiKey = sensitiveData['themoviedbkey']
+        }
+    }
+}
+
+if (theMovieDbApiKey == noKeyFound) {
+    theMovieDbApiKey = '"reviewers themoviedb api key"'
+}
+// End of reading the sensitive data
+
+
 android {
     compileSdkVersion 26
     defaultConfig {
@@ -9,6 +34,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // the moviedbapi key constant
+        buildConfigField "String", "THEMOVIEDB_API_KEY", theMovieDbApiKey
     }
     buildTypes {
         release {
@@ -49,4 +76,7 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.6.0'
     //stetho
     compile 'com.facebook.stetho:stetho:1.5.0'
+    //facebook network quality library
+    compile 'com.facebook.network.connectionclass:connectionclass:1.0.1'
+
 }
