@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this,theMoviedBBApiKey,Toast.LENGTH_LONG).show();
         //checkpermissions
         Mayi.withActivity(this)
-                .withPermissions(Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE)
+                .withPermissions(Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE,Manifest.permission.READ_CONTACTS)
                 .onRationale(this::permissionRationaleMulti)
                 .onResult(this::permissionResultMulti)
                 .check();
