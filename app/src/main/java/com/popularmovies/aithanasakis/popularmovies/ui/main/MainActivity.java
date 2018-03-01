@@ -1,19 +1,11 @@
 package com.popularmovies.aithanasakis.popularmovies.ui.main;
 
 import android.Manifest;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.text.InputType;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.popularmovies.aithanasakis.popularmovies.BuildConfig;
@@ -27,14 +19,14 @@ import java.util.Arrays;
 public class MainActivity extends AppCompatActivity {
 
     private StaggeredGridLayoutManager mStaggeredGridLayoutManager;
-    private String theMoviedBBApiKey;
+    private String theMovieDBBApiKey;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        theMoviedBBApiKey = BuildConfig.THEMOVIEDB_API_KEY;
-        Toast.makeText(this,theMoviedBBApiKey,Toast.LENGTH_LONG).show();
-        //checkpermissions
+        theMovieDBBApiKey = BuildConfig.THEMOVIEDB_API_KEY;
+        Toast.makeText(this,theMovieDBBApiKey,Toast.LENGTH_LONG).show();
+        //check permissions for android M and above
         Mayi.withActivity(this)
                 .withPermissions(Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE,Manifest.permission.READ_CONTACTS)
                 .onRationale(this::permissionRationaleMulti)

@@ -2,4 +2,16 @@
     <string name="app_name">Popular Movies</string>
     <string name="sort_by_popularity">Sort by popularity</string>
     <string name="sort_by_rating">Sort by rating</string>
+    <string name="goto_nasa">Visit Nasa website</string>
+    <string name="share">Share the app!</string>
+    <string name="empty_view">No results to show</string>
+    <string name="google_play_prefix" translatable="false">https://play.google.com/store/apps/details?id=</string>
+    <string name="nasa_api_link" translatable="false">https://images.nasa.gov/</string>
+    <string name="share_text">Share the app at:</string>
+    <string name="query">What are you looking for?</string>
+    <string name="search">Search</string>
+
+    <!--Navigation drawer-->
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 </resources>
