@@ -25,16 +25,12 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_results"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/query_layout"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layoutAnimation="@anim/rv_layout_animation" />
 
 
@@ -50,6 +46,7 @@
                 android:layout_width="160dp"
                 android:layout_height="160dp"
                 android:layout_gravity="center_horizontal"
+                android:contentDescription="Image of Poster"
                 android:background="@drawable/ic_public_black_24dp" />I
 
             <TextView
@@ -63,32 +60,4 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/query_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerInParent="true"
-            android:orientation="horizontal"
-            android:textAlignment="center">
-
-            <EditText
-                android:id="@+id/edit_query"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight="4"
-                android:fontFamily="@font/roboto"
-                android:hint="@string/query"
-                android:padding="@dimen/small_margin"
-                android:textSize="@dimen/medium_font_size" />
-
-            <Button
-                android:id="@+id/search_button"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:padding="@dimen/small_margin"
-                android:text="@string/search" />
-        </LinearLayout>
-    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
