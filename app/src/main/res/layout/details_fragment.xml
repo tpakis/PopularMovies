@@ -5,11 +5,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     tools:context=".ui.details.DetailsActivity">
 
     <android.support.v7.widget.CardView
-        android:id="@+id/card_movie_detail"
+        android:id="@+id/card_showlight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -23,42 +22,47 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/image_movie_detail_poster"
+                android:id="@+id/details_poster"
                 android:layout_width="160dp"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 tools:src="@mipmap/ic_launcher"/>
 
             <TextView
-                android:id="@+id/text_movie_original_title"
+                android:id="@+id/details_title"
                 style="@android:style/TextAppearance.Large"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/image_movie_detail_poster"
-                android:layout_toEndOf="@+id/image_movie_detail_poster"
-                android:layout_toRightOf="@+id/image_movie_detail_poster"
+                android:layout_alignTop="@+id/details_poster"
+                android:layout_toRightOf="@+id/details_poster"
+                android:fontFamily="@font/roboto"
+                android:maxLines="2"
                 android:ellipsize="end"
-                android:fontFamily="sans-serif-condensed"
-                android:maxLines="3"
-                android:paddingEnd="8dp"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:paddingStart="8dp"
-                android:paddingTop="16dp"
-                tools:text="Original movie title"/>
+                android:paddingLeft="@dimen/small_margin"
+                android:paddingTop="@dimen/small_margin"
+                tools:text="TITLE"/>
 
-            <TextView
-                android:id="@+id/text_movie_user_rating"
+            <RatingBar
+                android:id="@+id/details_ratingbar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_margin="@dimen/small_margin"
-                android:layout_toEndOf="@+id/image_movie_detail_poster"
-                android:layout_toRightOf="@+id/image_movie_detail_poster"
-                android:fontFamily="sans-serif-light"
-                android:gravity="center"
-                android:textSize="42sp"
-                tools:text="10.0"/>
+                android:layout_below="@+id/details_title"
+                android:layout_toRightOf="@+id/details_poster"
+                style="?android:attr/ratingBarStyleSmall"
+                android:isIndicator="false"
+                android:numStars="10"/>
+
+            <TextView
+                android:id="@+id/details_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/small_margin"
+                android:layout_marginTop="@dimen/small_margin"
+                android:layout_toRightOf="@+id/details_poster"
+                android:layout_below="@+id/details_ratingbar"
+                android:fontFamily="@font/roboto"
+                android:textSize="@dimen/large_font_size"
+                tools:text="tmdb rating: 9.8"/>
 
             <TextView
                 android:id="@+id/text_movie_release_date"
@@ -67,7 +71,7 @@
                 android:layout_alignBottom="@id/image_movie_detail_poster"
                 android:layout_marginBottom="@dimen/small_margin"
                 android:layout_toEndOf="@+id/image_movie_detail_poster"
-                android:layout_toRightOf="@+id/image_movie_detail_poster"
+                android:layout_toRightOf="@+id/details_poster"
                 android:paddingEnd="8dp"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
@@ -79,10 +83,10 @@
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
-        android:id="@+id/card_movie_overview"
+        android:id="@+id/card_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/card_movie_detail"
+        android:layout_below="@+id/card_showlight"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="@dimen/detailscards_left_right"
         android:layout_marginRight="@dimen/detailscards_left_right"
@@ -109,26 +113,6 @@
                 android:paddingTop="@dimen/small_margin"
                 tools:text="A plot synopsis (called overview in the api)"/>
 
-        </RelativeLayout>
-
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/card_movie_videos"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/card_movie_overview"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/tiny_margin"
-        android:layout_marginLeft="@dimen/detailscards_left_right"
-        android:layout_marginRight="@dimen/detailscards_left_right"
-        android:background="@color/white">
-
-        <RelativeLayout
-            android:id="@+id/card_movie_videos_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/small_margin">
 
             <TextView
                 android:id="@+id/text_videos_title"
@@ -146,26 +130,6 @@
                 android:orientation="horizontal"
                 android:paddingTop="@dimen/small_margin"
                 app:layoutManager="android.support.v7.widget.LinearLayoutManager"/>
-
-        </RelativeLayout>
-
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/card_movie_reviews"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/card_movie_videos"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="@dimen/detailscards_left_right"
-        android:layout_marginRight="@dimen/detailscards_left_right"
-        android:layout_marginBottom="@dimen/tiny_margin"
-        android:layout_marginTop="@dimen/tiny_margin">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/small_margin">
 
             <TextView
                 android:id="@+id/text_reviews_title"

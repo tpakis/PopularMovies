@@ -60,8 +60,7 @@ public class DetailsActivity extends AppCompatActivity {
 //change toolbar
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
+              getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             toolbar.setNavigationOnClickListener(view -> onBackPressed());
         }
         collapsingToolbarLayout.setTitle(selectedMovie.getTitle());

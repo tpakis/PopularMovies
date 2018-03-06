@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.popularmovies.aithanasakis.popularmovies.R;
+
 /**
  * Created by 3piCerberus on 06/03/2018.
  */
@@ -20,6 +22,8 @@ public class DetailsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
+        View viewgroup = inflater.inflate(R.layout.details_fragment,container,false);
+
+        return viewgroup;
     }
 }
