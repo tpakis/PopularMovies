@@ -32,7 +32,7 @@ public class MainActivityViewModel extends ViewModel {
 
     }
 
-    public LiveData<List<Movie>> getMyNasaItemsList(String query) {
+    public LiveData<List<Movie>> getMoviesItemsList(String query) {
         itemsListObservable.addSource(
                 popularRepository.getMoviesList(query, theMovieDBBApiKey, internetState),
                 apiResponse -> itemsListObservable.setValue(apiResponse)

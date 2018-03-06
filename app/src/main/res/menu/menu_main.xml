@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.main.MainActivity">
     <item
-        android:id="@+id/bt_settings"
+        android:id="@+id/sort_by_rating"
         android:orderInCategory="100"
         android:title="@string/sort_by_rating"
         app:showAsAction="never" />
     <item
-        android:id="@+id/bt_db_log"
+        android:id="@+id/sort_by_popularity"
         android:orderInCategory="100"
         android:title="@string/sort_by_popularity"
         app:showAsAction="never" />

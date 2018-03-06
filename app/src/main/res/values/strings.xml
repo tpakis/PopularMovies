@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="sort_by_popularity">Sort by popularity</string>
-    <string name="sort_by_rating">Sort by rating</string>
+    <string name="sort_by_popularity">Most Popular</string>
+    <string name="sort_by_rating">Top Rated</string>
     <string name="goto_nasa">Visit Nasa website</string>
     <string name="share">Share the app!</string>
     <string name="empty_view">No results to show</string>

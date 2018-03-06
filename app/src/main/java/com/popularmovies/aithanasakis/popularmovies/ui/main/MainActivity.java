@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.popularmovies.aithanasakis.popularmovies.BuildConfig;
 import com.popularmovies.aithanasakis.popularmovies.R;
 import com.popularmovies.aithanasakis.popularmovies.adapter.StaggeredMoviesAdapter;
+import com.popularmovies.aithanasakis.popularmovies.data.LocalPreferences;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
 import com.popularmovies.aithanasakis.popularmovies.repository.PopularMoviesRepository;
 import com.popularmovies.aithanasakis.popularmovies.ui.details.DetailsActivity;
@@ -62,6 +63,9 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
     private MainActivityViewModel viewModel;
     private StaggeredMoviesAdapter mMoviesAdapter;
     private StaggeredGridLayoutManager mStaggeredGridLayoutManager;
+    private LocalPreferences prefs;
+    private static final String SORT_BY_POPULARITY = "popular";
+    private static final String SORT_BY_RATING = "top_rated";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +109,9 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                 runLayoutAnimation(rvMovies);
             }
         });
-        viewModel.getMyNasaItemsList("popular");
+
+        callForData(LocalPreferences.getSortParameter(this));
+
     }
 
     // Animation RecyclerView
@@ -138,10 +144,16 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
+        switch (id){
+            case R.id.sort_by_popularity:
+                callForData(SORT_BY_POPULARITY);
+                break;
+            case R.id.sort_by_rating:
+                callForData(SORT_BY_RATING);
+                break;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -179,5 +191,10 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         intent.putExtra("item", selectedMovieItem);
         //intent.putExtra(Intent.EXTRA_TEXT, ""+selectedNasaItem.getNasaId());
         startActivity(intent);
+    }
+
+    private void callForData(String sortParameter){
+        viewModel.getMoviesItemsList(sortParameter);
+        LocalPreferences.setSortParameter(sortParameter,this);
     }
 }

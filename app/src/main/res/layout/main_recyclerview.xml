@@ -33,7 +33,9 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layoutAnimation="@anim/rv_layout_animation" />
 
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
         <LinearLayout
             android:id="@+id/todo_list_empty_view"
             android:layout_width="match_parent"
@@ -59,5 +61,5 @@
                 android:textSize="@dimen/large_font_size" />
 
         </LinearLayout>
-
+</RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
