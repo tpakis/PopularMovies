@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="tiny_margin">5dp</dimen>
+    <dimen name="tiny_margin">4dp</dimen>
     <dimen name="small_margin">8dp</dimen>
     <dimen name="medium_margin">16dp</dimen>
     <dimen name="large_margin">20dp</dimen>
@@ -11,6 +11,10 @@
     <dimen name="large_font_size">20sp</dimen>
     <dimen name="huge_font_size">24sp</dimen>
     <dimen name="social_font_size">50sp</dimen>
+    <!--Details Activity-->
+    <dimen name="detailscards_left_right">1dp</dimen>
+    <dimen name="details_width">-1px</dimen><!--match_parent, -2px is wrap_content-->
+    <dimen name="details_overlay">1dp</dimen>
 
     <!-- Onboarding Screens. -->
     <dimen name="dots_height">30dp</dimen>

@@ -16,7 +16,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         MyApplication.context = getApplicationContext();
-      // Timber.plant(new MyTimberTree());
+        Timber.plant(new Timber.DebugTree());
     }
 
     public static Context getAppContext() {
