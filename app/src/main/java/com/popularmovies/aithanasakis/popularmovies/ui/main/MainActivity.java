@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final String SORT_BY_POPULARITY = "popular";
     private static final String SORT_BY_RATING = "top_rated";
+    private static final String BUNDLE_MOVIE = "item";
     @BindView(R.id.rv_results)
     public RecyclerView rvMovies;
     @BindView(R.id.todo_list_empty_view)
@@ -69,9 +70,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ButterKnife.bind(this);
         Timber.v("Activity Started!");
 
-        //check permissions for android M and above
+        //check permissions for android M and above, not used yet it gets every permission
         Mayi.withActivity(this)
-                .withPermissions(Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.READ_CONTACTS)
+                .withPermissions(Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE)
                 .onRationale(this::permissionRationaleMulti)
                 .onResult(this::permissionResultMulti)
                 .check();
@@ -181,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onClick(Movie selectedMovieItem) {
         Context context = this;
         Intent intent = new Intent(context, DetailsActivity.class);
-        intent.putExtra("item", selectedMovieItem);
+        intent.putExtra(BUNDLE_MOVIE, selectedMovieItem);
         startActivity(intent);
     }
 
