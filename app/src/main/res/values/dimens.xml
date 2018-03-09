@@ -15,6 +15,7 @@
     <dimen name="detailscards_left_right">1dp</dimen>
     <dimen name="details_width">-1px</dimen><!--match_parent, -2px is wrap_content-->
     <dimen name="details_overlay">1dp</dimen>
+    <dimen name="details_poster_width">160dp</dimen>
 
     <!-- Onboarding Screens. -->
     <dimen name="dots_height">30dp</dimen>

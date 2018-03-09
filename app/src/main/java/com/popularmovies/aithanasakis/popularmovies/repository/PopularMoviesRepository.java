@@ -27,6 +27,7 @@ public class PopularMoviesRepository {
     //private MovieDBDAO mMovieDBDAO;
     private PopularMoviesRepository() {
         mMovieDBService = MovieDBUtils.getMovieDBService();
+        // Local db storage will be implemented
         //mMovieDBDAO = MovieDB.getDatabase().getMovieDBDAO();
     }
 
@@ -37,12 +38,16 @@ public class PopularMoviesRepository {
         return MOVIESREPOSITORY;
     }
 
-    public MutableLiveData<List<Movie>> getItemsListFromWeb(String popularOrRated, String apiKey) {
+    /**
+     *
+     * @param popularOrRated wheather to check for most popular movies or for top rated
+     * @param apiKey the tmdb api key of the user
+     * @return
+     */
+    private MutableLiveData<List<Movie>> getItemsListFromWeb(String popularOrRated, String apiKey) {
         final MutableLiveData<List<Movie>> retlist = new MutableLiveData<>();
         mMovieDBService.getItems(popularOrRated,apiKey).enqueue(new Callback<MovieDBResponse>() {
             List<Movie> items = new ArrayList<Movie>();
-          //  Datum datum = new Datum();
-     //       Link link = new Link();
 
             @Override
             public void onResponse(Call<MovieDBResponse> call, Response<MovieDBResponse> response) {
@@ -60,12 +65,21 @@ public class PopularMoviesRepository {
 
         return retlist;
     }
+
+    /**
+     * Public method to request data from the respository
+     * @param query what are you looking for (popular / top rated)
+     * @param apiKey the tmdb api key
+     * @param internetState whether we have internet access or not
+     * @return
+     */
     public MutableLiveData<List<Movie>> getMoviesList(String query, String apiKey, boolean internetState) {
         //final  MutableLiveData<List<Movie>> data = new MutableLiveData<>();
         //data.setValue(getItemsListFromWeb(query));
         if (internetState) {
             return getItemsListFromWeb(query,apiKey);
         } else {
+            //it will call getListFromDB
             return getItemsListFromWeb(query,apiKey);
        //     return getItemsListFromDB("%" + query + "%");
         }

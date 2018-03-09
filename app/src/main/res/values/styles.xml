@@ -24,4 +24,18 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="RatingBar" parent="Theme.AppCompat">
+        <item name="colorControlNormal">@color/grey</item>
+        <item name="colorControlActivated">@color/yellow</item>
+    </style>
+
+    <style name="card_showlight_item">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_toRightOf">@+id/details_poster</item>
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:layout_marginLeft">@dimen/small_margin</item>
+    </style>
+
+
 </resources>

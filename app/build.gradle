@@ -82,6 +82,7 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.6.0'
     //stetho
     compile 'com.facebook.stetho:stetho:1.5.0'
+    compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
     //facebook network quality library
     compile 'com.facebook.network.connectionclass:connectionclass:1.0.1'
     //Mayi for permissions

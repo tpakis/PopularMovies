@@ -1,4 +1,6 @@
 <resources>
+    <!--Static Variables-->
+    <string name="MOVIE_DB_IMAGE_PATH">http://image.tmdb.org/t/p/w780/</string>
     <!--Main Activity-->
     <string name="app_name">Popular Movies</string>
     <string name="sort_by_popularity">Most Popular</string>

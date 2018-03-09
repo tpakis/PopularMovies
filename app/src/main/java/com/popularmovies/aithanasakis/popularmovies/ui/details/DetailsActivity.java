@@ -1,5 +1,6 @@
 package com.popularmovies.aithanasakis.popularmovies.ui.details;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -16,7 +17,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.popularmovies.aithanasakis.popularmovies.R;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
+import com.popularmovies.aithanasakis.popularmovies.viewmodel.DetailsActivityViewModel;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
@@ -39,15 +42,21 @@ public class DetailsActivity extends AppCompatActivity {
     FloatingActionButton fab;
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
+    @BindString(R.string.MOVIE_DB_IMAGE_PATH)
+    String movieDBImagePath;
     private Movie selectedMovie;
-    private static final String MOVIE_DB_IMAGE_PATH = "http://image.tmdb.org/t/p/w780/";
+    private DetailsActivityViewModel viewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
+
         selectedMovie = getIntent().getExtras().getParcelable("item");
+        viewModel = ViewModelProviders.of(this).get(DetailsActivityViewModel.class);
+        viewModel.setSelectedMovie(selectedMovie);
         Timber.d("Timber" + selectedMovie.toString());
         if (savedInstanceState == null) {
             DetailsFragment detailsFragment = new DetailsFragment();
@@ -57,31 +66,24 @@ public class DetailsActivity extends AppCompatActivity {
                     .add(R.id.details_fragment_container, detailsFragment)
                     .commit();
         }
-//change toolbar
+        //change toolbar
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-              getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             toolbar.setNavigationOnClickListener(view -> onBackPressed());
         }
         collapsingToolbarLayout.setTitle(selectedMovie.getTitle());
         collapsingToolbarLayout.setExpandedTitleColor(ContextCompat.getColor(this, android.R.color.transparent));
-//load backdrop photo
+        //load backdrop photo
         RequestOptions options = new RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .centerCrop()
                 .dontTransform()
                 .placeholder(R.drawable.ic_public_black_24dp)
                 .error(R.mipmap.ic_launcher_round);
-        Glide.with(backdrop.getContext()).load(MOVIE_DB_IMAGE_PATH+selectedMovie.getBackdropPath()).apply(options)
+        Glide.with(backdrop.getContext()).load(movieDBImagePath + selectedMovie.getBackdropPath()).apply(options)
                 .into(backdrop);
-    }
 
-    public Movie getSelectedMovie() {
-        return selectedMovie;
-    }
-
-    public void setSelectedMovie(Movie selectedMovie) {
-        this.selectedMovie = selectedMovie;
     }
 
 }

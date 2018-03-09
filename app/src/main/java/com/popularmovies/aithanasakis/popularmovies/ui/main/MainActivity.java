@@ -9,13 +9,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -25,29 +25,27 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import com.popularmovies.aithanasakis.popularmovies.BuildConfig;
 import com.popularmovies.aithanasakis.popularmovies.R;
 import com.popularmovies.aithanasakis.popularmovies.adapter.StaggeredMoviesAdapter;
 import com.popularmovies.aithanasakis.popularmovies.data.LocalPreferences;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
-import com.popularmovies.aithanasakis.popularmovies.repository.PopularMoviesRepository;
 import com.popularmovies.aithanasakis.popularmovies.ui.details.DetailsActivity;
 import com.popularmovies.aithanasakis.popularmovies.viewmodel.MainActivityViewModel;
 import com.thanosfisherman.mayi.Mayi;
 import com.thanosfisherman.mayi.PermissionBean;
 import com.thanosfisherman.mayi.PermissionToken;
 
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener, StaggeredMoviesAdapter.MovieDBResultsAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, StaggeredMoviesAdapter.MovieDBResultsAdapterOnClickHandler {
 
+    private static final String SORT_BY_POPULARITY = "popular";
+    private static final String SORT_BY_RATING = "top_rated";
     @BindView(R.id.rv_results)
     public RecyclerView rvMovies;
     @BindView(R.id.todo_list_empty_view)
@@ -63,9 +61,6 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
     private MainActivityViewModel viewModel;
     private StaggeredMoviesAdapter mMoviesAdapter;
     private StaggeredGridLayoutManager mStaggeredGridLayoutManager;
-    private LocalPreferences prefs;
-    private static final String SORT_BY_POPULARITY = "popular";
-    private static final String SORT_BY_RATING = "top_rated";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +71,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
         //check permissions for android M and above
         Mayi.withActivity(this)
-                .withPermissions(Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE,Manifest.permission.READ_CONTACTS)
+                .withPermissions(Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.READ_CONTACTS)
                 .onRationale(this::permissionRationaleMulti)
                 .onResult(this::permissionResultMulti)
                 .check();
@@ -90,13 +85,13 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
-         toggle.syncState();
+        toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
         getSupportActionBar().setDisplayShowHomeEnabled(false);
 
-
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
-        checkForInternet();
+
+        // initialize observe on viewmodel livedata list
         viewModel.getItemsListObservable().observe(MainActivity.this, new Observer<List<Movie>>() {
             @Override
             public void onChanged(@Nullable List<Movie> myMovieItemsList) {
@@ -110,11 +105,20 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
             }
         });
 
-        callForData(LocalPreferences.getSortParameter(this));
-
+        //setup eplicit broadcast receiver
+        mNetworkIntentFilter = new IntentFilter();
+        mNetworkReceiver = new NetworkBroadcastReceiver();
+        mNetworkIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
     }
 
-    // Animation RecyclerView
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkForInternet();
+        callForData(LocalPreferences.getSortParameter(this));
+    }
+
+    // RecyclerView new items animation
     private void runLayoutAnimation(final RecyclerView recyclerView) {
         final Context context = recyclerView.getContext();
         final LayoutAnimationController controller =
@@ -124,14 +128,14 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         recyclerView.getAdapter().notifyDataSetChanged();
         recyclerView.scheduleLayoutAnimation();
     }
-    private void permissionResultMulti(PermissionBean[] permissions)
-    {
-        Toast.makeText(MainActivity.this, "MULTI PERMISSION RESULT " + Arrays.deepToString(permissions), Toast.LENGTH_LONG).show();
-    }
 
-    private void permissionRationaleMulti(PermissionBean[] permissions, PermissionToken token)
-    {
-        Toast.makeText(MainActivity.this, "Rationales for Multiple Permissions " + Arrays.deepToString(permissions), Toast.LENGTH_LONG).show();
+    // Mayi library for permissions results
+    private void permissionResultMulti(PermissionBean[] permissions) {
+        //Toast.makeText(MainActivity.this, "MULTI PERMISSION RESULT " + Arrays.deepToString(permissions), Toast.LENGTH_LONG).show();
+    }
+    // Mayi library for permissions results
+    private void permissionRationaleMulti(PermissionBean[] permissions, PermissionToken token) {
+      //  Toast.makeText(MainActivity.this, "Rationales for Multiple Permissions " + Arrays.deepToString(permissions), Toast.LENGTH_LONG).show();
         token.continuePermissionRequest();
     }
 
@@ -144,9 +148,8 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         int id = item.getItemId();
-        switch (id){
+        switch (id) {
             case R.id.sort_by_popularity:
                 callForData(SORT_BY_POPULARITY);
                 break;
@@ -157,6 +160,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
         return super.onOptionsItemSelected(item);
     }
+
     private void checkForInternet() {
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -164,21 +168,10 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         viewModel.setInternetState(netInfo != null && netInfo.isConnectedOrConnecting());
     }
 
-    private class NetworkBroadcastReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            checkForInternet();
-        }
-    }
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-       /* if (id == R.id.nav_goto_nasa) {
-            goToNasa();
-        } else if (id == R.id.nav_share) {
-            shareApp(this);
-        }*/
+        // Temporarily link the navigation drawer with the options menu
+        onOptionsItemSelected(item);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -189,12 +182,19 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         Context context = this;
         Intent intent = new Intent(context, DetailsActivity.class);
         intent.putExtra("item", selectedMovieItem);
-        //intent.putExtra(Intent.EXTRA_TEXT, ""+selectedNasaItem.getNasaId());
         startActivity(intent);
     }
 
-    private void callForData(String sortParameter){
+    //initialize a call for data from the viewmodel
+    private void callForData(String sortParameter) {
         viewModel.getMoviesItemsList(sortParameter);
-        LocalPreferences.setSortParameter(sortParameter,this);
+        LocalPreferences.setSortParameter(sortParameter, this);
+    }
+
+    private class NetworkBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            checkForInternet();
+        }
     }
 }

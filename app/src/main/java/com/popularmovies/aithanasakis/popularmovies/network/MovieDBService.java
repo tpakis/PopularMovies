@@ -1,6 +1,8 @@
 package com.popularmovies.aithanasakis.popularmovies.network;
 
 import com.popularmovies.aithanasakis.popularmovies.model.MovieDBResponse;
+import com.popularmovies.aithanasakis.popularmovies.model.MovieReviews;
+import com.popularmovies.aithanasakis.popularmovies.model.MovieVideos;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -12,8 +14,15 @@ import retrofit2.http.Query;
  */
 
 public interface MovieDBService {
-    @GET("/3/movie/{popularOrRated}")
+    @GET("movie/{popularOrRated}")
     Call<MovieDBResponse> getItems(@Path("popularOrRated") String popularOrRated,
                                    @Query("api_key") String apiKey);
+
+    //getting ready for phase 2
+    @GET("movie/{id}/videos")
+    Call<MovieVideos> getMovieVideos(@Path("id") int movieId);
+    //getting ready for phase 2
+    @GET("movie/{id}/reviews")
+    Call<MovieReviews> getMovieReviews(@Path("id") int movieId);
 }
 
