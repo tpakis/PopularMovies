@@ -18,8 +18,6 @@ import timber.log.Timber;
 
 public class MyApplication extends Application {
 
-
-    //    TODO  implement this with Dagger2
     public MainActivityViewModelComponent mainActivityViewModelComponent;
     private static Context context;
 

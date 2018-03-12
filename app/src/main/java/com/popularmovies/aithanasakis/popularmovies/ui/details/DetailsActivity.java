@@ -1,5 +1,6 @@
 package com.popularmovies.aithanasakis.popularmovies.ui.details;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -23,8 +25,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.popularmovies.aithanasakis.popularmovies.R;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
+import com.popularmovies.aithanasakis.popularmovies.model.MovieReviews;
 import com.popularmovies.aithanasakis.popularmovies.ui.main.MainActivity;
 import com.popularmovies.aithanasakis.popularmovies.viewmodel.DetailsActivityViewModel;
+
+import java.util.List;
 
 import butterknife.BindString;
 import butterknife.BindView;
@@ -56,6 +61,7 @@ public class DetailsActivity extends AppCompatActivity {
     IntentFilter mNetworkIntentFilter;
     private DetailsActivityViewModel viewModel;
     private static final String BUNDLE_MOVIE = "item";
+    DetailsFragment detailsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +72,10 @@ public class DetailsActivity extends AppCompatActivity {
         selectedMovie = getIntent().getExtras().getParcelable(BUNDLE_MOVIE);
         viewModel = ViewModelProviders.of(this).get(DetailsActivityViewModel.class);
         viewModel.setSelectedMovie(selectedMovie);
+
         Timber.d("Timber" + selectedMovie.toString());
         if (savedInstanceState == null) {
-            DetailsFragment detailsFragment = new DetailsFragment();
+           detailsFragment = new DetailsFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
 
             fragmentManager.beginTransaction()
@@ -92,7 +99,13 @@ public class DetailsActivity extends AppCompatActivity {
                 .error(R.mipmap.ic_launcher_round);
         Glide.with(backdrop.getContext()).load(movieDBImagePath + selectedMovie.getBackdropPath()).apply(options)
                 .into(backdrop);
-
+        viewModel.getReviewsListObservable().observe(DetailsActivity.this, new Observer<List<MovieReviews>>() {
+            @Override
+            public void onChanged(@Nullable List<MovieReviews> myMovieItemsList) {
+                detailsFragment.setRvReviewsResults(myMovieItemsList);
+            }
+        });
+        viewModel.requestMovieDetails();
     }
 
     @Override

@@ -15,7 +15,7 @@ import dagger.Provides;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 
-
+//includes because it needs to know where to get context
 @Module(includes = AppModule.class)
 public class OkHttpClientModule {
 

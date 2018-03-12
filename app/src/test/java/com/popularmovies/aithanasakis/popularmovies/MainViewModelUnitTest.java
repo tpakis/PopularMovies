@@ -25,7 +25,9 @@ private MainActivityViewModel viewModel;
 
     @Test
     public void test1(){
-
+        String search =null;
+        viewModel.getMoviesItemsList(search);
+       Mockito.verify(viewModel.popularRepository,Mockito.never()).getMoviesList(search,"fdg",true);
     }
 
 

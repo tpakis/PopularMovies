@@ -1,11 +1,14 @@
 package com.popularmovies.aithanasakis.popularmovies.ui.details;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,19 +20,26 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.popularmovies.aithanasakis.popularmovies.R;
+import com.popularmovies.aithanasakis.popularmovies.adapter.ReviewsAdapter;
+import com.popularmovies.aithanasakis.popularmovies.adapter.StaggeredMoviesAdapter;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
+import com.popularmovies.aithanasakis.popularmovies.model.MovieReviews;
+import com.popularmovies.aithanasakis.popularmovies.ui.main.MainActivity;
 import com.popularmovies.aithanasakis.popularmovies.viewmodel.DetailsActivityViewModel;
+
+import java.util.List;
 
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import timber.log.Timber;
 
 /**
  * Created by 3piCerberus on 06/03/2018.
  */
 
-public class DetailsFragment extends Fragment {
+public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsAdapterOnClickHandler{
     @BindView(R.id.details_poster)
     ImageView detailsPoster;
     @BindView(R.id.details_title)
@@ -64,6 +74,8 @@ public class DetailsFragment extends Fragment {
     private DetailsActivityViewModel viewModel;
     private DetailsActivity parent;
     private Movie selectedMovie;
+    private ReviewsAdapter mReviewsAdapter;
+    private LinearLayoutManager mLinearLayoutManager;
 
     public DetailsFragment() {
 
@@ -74,12 +86,14 @@ public class DetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         parent = (DetailsActivity) this.getActivity();
         viewModel = ViewModelProviders.of(parent).get(DetailsActivityViewModel.class);
+
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
        //getting the selected movie from the details activity viewmodel
+
         selectedMovie = viewModel.getSelectedMovie();
         View viewgroup = inflater.inflate(R.layout.details_fragment, container, false);
         unbinder = ButterKnife.bind(this, viewgroup);
@@ -99,8 +113,13 @@ public class DetailsFragment extends Fragment {
         detailsOverviewText.setText(selectedMovie.getOverview());
 
         //getting ready for phase 2
-        detailsVideosLabel.setVisibility(View.GONE);
-        detailsReviewsLabel.setVisibility(View.GONE);
+        //detailsVideosLabel.setVisibility(View.GONE);
+      //  detailsReviewsLabel.setVisibility(View.GONE);
+        //recyclerview Reviews
+        mLinearLayoutManager = new LinearLayoutManager(getContext());
+        detailsReviewsRv.setLayoutManager(mLinearLayoutManager);
+        mReviewsAdapter = new ReviewsAdapter(DetailsFragment.this);
+        detailsReviewsRv.setAdapter(mReviewsAdapter);
         return viewgroup;
     }
 
@@ -108,5 +127,14 @@ public class DetailsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onClick(MovieReviews selectedMovieItem) {
+
+    }
+
+    public void setRvReviewsResults(@Nullable List<MovieReviews> myMovieItemsList){
+        mReviewsAdapter.setReviewsResults(myMovieItemsList);
     }
 }

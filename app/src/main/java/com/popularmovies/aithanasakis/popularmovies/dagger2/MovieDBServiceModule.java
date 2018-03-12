@@ -13,6 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * Created by 3piCerberus on 12/03/2018.
  */
+//includes because it needs to know where to get okHttpClient
 @Module(includes = OkHttpClientModule.class)
 public class MovieDBServiceModule {
     final static String MOVIEDB_BASE_URL =

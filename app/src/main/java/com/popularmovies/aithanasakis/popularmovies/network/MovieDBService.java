@@ -1,6 +1,8 @@
 package com.popularmovies.aithanasakis.popularmovies.network;
 
 import com.popularmovies.aithanasakis.popularmovies.model.MovieDBResponse;
+import com.popularmovies.aithanasakis.popularmovies.model.MovieDBReviewsResponse;
+import com.popularmovies.aithanasakis.popularmovies.model.MovieDBVideosResponse;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieReviews;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieVideos;
 
@@ -18,11 +20,13 @@ public interface MovieDBService {
     Call<MovieDBResponse> getItems(@Path("popularOrRated") String popularOrRated,
                                    @Query("api_key") String apiKey);
 
-    //getting ready for phase 2
+
     @GET("movie/{id}/videos")
-    Call<MovieVideos> getMovieVideos(@Path("id") int movieId);
-    //getting ready for phase 2
+    Call<MovieDBVideosResponse> getMovieVideos(@Path("id") int movieId,
+                                                        @Query("api_key") String apiKey);
+
     @GET("movie/{id}/reviews")
-    Call<MovieReviews> getMovieReviews(@Path("id") int movieId);
+    Call<MovieDBReviewsResponse> getMovieReviews(@Path("id") int movieId,
+                                                 @Query("api_key") String apiKey);
 }
 

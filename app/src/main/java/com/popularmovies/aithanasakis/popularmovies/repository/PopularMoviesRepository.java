@@ -4,6 +4,10 @@ import android.arch.lifecycle.MutableLiveData;
 
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieDBResponse;
+import com.popularmovies.aithanasakis.popularmovies.model.MovieDBReviewsResponse;
+import com.popularmovies.aithanasakis.popularmovies.model.MovieDBVideosResponse;
+import com.popularmovies.aithanasakis.popularmovies.model.MovieReviews;
+import com.popularmovies.aithanasakis.popularmovies.model.MovieVideos;
 import com.popularmovies.aithanasakis.popularmovies.network.MovieDBService;
 
 import java.util.ArrayList;
@@ -68,6 +72,50 @@ public class PopularMoviesRepository {
 
         return retlist;
     }
+
+    public MutableLiveData<List<MovieReviews>> getMovieReviewsFromWeb(int movieId, String apiKey) {
+        final MutableLiveData<List<MovieReviews>> retlist = new MutableLiveData<>();
+        mMovieDBService.getMovieReviews(movieId,apiKey).enqueue(new Callback<MovieDBReviewsResponse>() {
+            List<MovieReviews> items = new ArrayList<MovieReviews>();
+
+            @Override
+            public void onResponse(Call<MovieDBReviewsResponse> call, Response<MovieDBReviewsResponse> response) {
+                if (response.isSuccessful()) {
+                    items.addAll(response.body().getResults());
+                    retlist.setValue(items);
+                }
+            }
+            @Override
+            public void onFailure(Call<MovieDBReviewsResponse> call, Throwable t) {
+                Timber.v( t.getLocalizedMessage());
+            }
+        });
+
+        return retlist;
+    }
+
+    public MutableLiveData<List<MovieVideos>> getMovieVideosFromWeb(int movieId, String apiKey) {
+        final MutableLiveData<List<MovieVideos>> retlist = new MutableLiveData<>();
+        mMovieDBService.getMovieVideos(movieId,apiKey).enqueue(new Callback<MovieDBVideosResponse>() {
+            List<MovieVideos> items = new ArrayList<MovieVideos>();
+
+            @Override
+            public void onResponse(Call<MovieDBVideosResponse> call, Response<MovieDBVideosResponse> response) {
+                if (response.isSuccessful()) {
+                    items.addAll(response.body().getResults());
+                    retlist.setValue(items);
+                }
+            }
+            @Override
+            public void onFailure(Call<MovieDBVideosResponse> call, Throwable t) {
+                Timber.v( t.getLocalizedMessage());
+            }
+        });
+
+        return retlist;
+    }
+
+
 
     /**
      * Public method to request data from the respository

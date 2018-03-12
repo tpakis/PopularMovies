@@ -11,6 +11,8 @@ import dagger.Provides;
 /**
  * Created by 3piCerberus on 12/03/2018.
  */
+
+//includes because it needs to know where to get the MovieDBService dependency
 @Module(includes = MovieDBServiceModule.class)
 public class PopularMoviesRepositoryModule {
 

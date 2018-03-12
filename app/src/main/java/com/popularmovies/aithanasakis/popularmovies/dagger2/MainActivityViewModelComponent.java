@@ -1,6 +1,9 @@
 package com.popularmovies.aithanasakis.popularmovies.dagger2;
 
+import com.popularmovies.aithanasakis.popularmovies.network.MovieDBService;
 import com.popularmovies.aithanasakis.popularmovies.repository.PopularMoviesRepository;
+import com.popularmovies.aithanasakis.popularmovies.ui.details.DetailsActivity;
+import com.popularmovies.aithanasakis.popularmovies.viewmodel.DetailsActivityViewModel;
 import com.popularmovies.aithanasakis.popularmovies.viewmodel.MainActivityViewModel;
 
 import javax.inject.Singleton;
@@ -18,6 +21,6 @@ import dagger.Component;
 public interface MainActivityViewModelComponent {
 
     void inject(MainActivityViewModel viewModel);
-
+    void inject(DetailsActivityViewModel viewModel);
     PopularMoviesRepository getPopularMoviesRepository();
 }
