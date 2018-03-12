@@ -5,10 +5,11 @@ import android.arch.lifecycle.MutableLiveData;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieDBResponse;
 import com.popularmovies.aithanasakis.popularmovies.network.MovieDBService;
-import com.popularmovies.aithanasakis.popularmovies.network.MovieDBUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,22 +23,24 @@ import timber.log.Timber;
 public class PopularMoviesRepository {
     private static PopularMoviesRepository MOVIESREPOSITORY;
     //retrofit
-    private MovieDBService mMovieDBService;
+
+    public MovieDBService mMovieDBService;
     //room to be implemented
     //private MovieDBDAO mMovieDBDAO;
-    private PopularMoviesRepository() {
-        mMovieDBService = MovieDBUtils.getMovieDBService();
+    @Inject
+    public PopularMoviesRepository(MovieDBService mMovieDBService) {
+       this.mMovieDBService =mMovieDBService;
         // Local db storage will be implemented
         //mMovieDBDAO = MovieDB.getDatabase().getMovieDBDAO();
     }
 
-    public synchronized static PopularMoviesRepository getInstance() {
+  /*  public synchronized static PopularMoviesRepository getInstance() {
         if (MOVIESREPOSITORY == null) {
             MOVIESREPOSITORY = new PopularMoviesRepository();
         }
         return MOVIESREPOSITORY;
     }
-
+*/
     /**
      *
      * @param popularOrRated wheather to check for most popular movies or for top rated

@@ -1,16 +1,17 @@
 package com.popularmovies.aithanasakis.popularmovies.viewmodel;
 
-import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.popularmovies.aithanasakis.popularmovies.BuildConfig;
+import com.popularmovies.aithanasakis.popularmovies.MyApplication;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
-import com.popularmovies.aithanasakis.popularmovies.network.MovieDBUtils;
 import com.popularmovies.aithanasakis.popularmovies.repository.PopularMoviesRepository;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import timber.log.Timber;
 
@@ -21,14 +22,17 @@ import timber.log.Timber;
 public class MainActivityViewModel extends ViewModel {
     private static boolean internetState = false;
     private String theMovieDBBApiKey;
-    private final PopularMoviesRepository popularRepository;
+
+    @Inject
+    public PopularMoviesRepository popularRepository;
     private MediatorLiveData<List<Movie>> itemsListObservable;
 
     public MainActivityViewModel () {
         super();
         theMovieDBBApiKey = BuildConfig.THEMOVIEDB_API_KEY;
         itemsListObservable = new MediatorLiveData<>();
-        popularRepository = PopularMoviesRepository.getInstance();
+        MyApplication.getMyApplication().getMainActivityViewModelComponent().inject(this);
+     //   popularRepository = PopularMoviesRepository.getInstance();
 
     }
 

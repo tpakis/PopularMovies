@@ -87,5 +87,11 @@ dependencies {
     compile 'com.facebook.network.connectionclass:connectionclass:1.0.1'
     //Mayi for permissions
     compile 'com.thanosfisherman.mayi:mayi:1.4'
+    //dagger2
+    compile 'com.google.dagger:dagger:2.11'
+    compile 'com.google.dagger:dagger-android:2.11'
+    compile 'com.google.dagger:dagger-android-support:2.11'
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.11'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
 
 }
