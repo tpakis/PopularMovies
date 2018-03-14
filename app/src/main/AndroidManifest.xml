@@ -3,7 +3,6 @@
     package="com.popularmovies.aithanasakis.popularmovies">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -30,6 +29,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.main.MainActivity" />
         </activity>
+        <provider
+            android:name="com.popularmovies.aithanasakis.popularmovies.data.LocalDBContentProvider"
+            android:authorities="com.popularmovies.aithanasakis.popularmovies"
+            android:exported="false" />
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

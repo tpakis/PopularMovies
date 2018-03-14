@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -18,7 +20,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -29,11 +34,14 @@ import com.popularmovies.aithanasakis.popularmovies.model.MovieReviews;
 import com.popularmovies.aithanasakis.popularmovies.ui.main.MainActivity;
 import com.popularmovies.aithanasakis.popularmovies.viewmodel.DetailsActivityViewModel;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import timber.log.Timber;
 
 /**
@@ -102,7 +110,9 @@ public class DetailsActivity extends AppCompatActivity {
         viewModel.getReviewsListObservable().observe(DetailsActivity.this, new Observer<List<MovieReviews>>() {
             @Override
             public void onChanged(@Nullable List<MovieReviews> myMovieItemsList) {
-                detailsFragment.setRvReviewsResults(myMovieItemsList);
+               if (detailsFragment!=null) {
+                   detailsFragment.setRvReviewsResults(myMovieItemsList);
+               }
             }
         });
         viewModel.requestMovieDetails();
@@ -125,6 +135,26 @@ public class DetailsActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             checkForInternet();
         }
+    }
+
+    @OnClick(R.id.fab)
+    public void onFabClicked(View view){
+        if (detailsFragment!=null) {
+           if (viewModel.isFavorite){
+               viewModel.deleteFavorite();
+           }else{
+               viewModel.storeFavorite(imageViewToByte(detailsFragment.detailsPoster),imageViewToByte(backdrop));
+           }
+        }
+    }
+
+    private byte[] imageViewToByte(ImageView view){
+        BitmapDrawable bitmapDrawable = ((BitmapDrawable)  view.getDrawable()) ;
+        Bitmap bitmap = bitmapDrawable .getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] imageInByte = stream.toByteArray();
+        return imageInByte;
     }
 
 }

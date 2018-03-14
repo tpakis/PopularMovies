@@ -1,7 +1,14 @@
 package com.popularmovies.aithanasakis.popularmovies.repository;
 
 import android.arch.lifecycle.MutableLiveData;
+import android.content.ContentValues;
+import android.net.Uri;
+import android.text.TextUtils;
+import android.widget.Toast;
 
+import com.popularmovies.aithanasakis.popularmovies.MyApplication;
+import com.popularmovies.aithanasakis.popularmovies.data.MovieContract;
+import com.popularmovies.aithanasakis.popularmovies.data.MovieContract.MovieItem;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieDBResponse;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieDBReviewsResponse;
@@ -45,6 +52,64 @@ public class PopularMoviesRepository {
         return MOVIESREPOSITORY;
     }
 */
+  public void deleteFavorite(Movie movie){
+      Uri uri = Uri.withAppendedPath(MovieItem.CONTENT_URI,movie.getId().toString());
+      MyApplication.getAppContext().getContentResolver().delete(uri,"",null);
+  }
+  public void storeFavorite(Movie movie, byte[] posterBlob,byte[] backdropBlob ){
+      int id = movie.getId();
+      String title = movie.getTitle();
+      String overview = movie.getOverview();
+      String releaseDate = movie.getReleaseDate();
+      String originalTitle = movie.getOriginalTitle();
+      String originalLanguage = movie.getOriginalLanguage();
+      String genres = movie.getGenreIds().toString();
+      int voteCount = movie.getVoteCount();
+      double voteAverage = movie.getVoteAverage();
+      double popularity = movie.getPopularity();
+      String posterPath = movie.getPosterPath();
+      String backdropPath = movie.getBackdropPath();
+      int video = movie.getVideo() ? 1 :0;
+      int adult = movie.getAdult() ? 1 :0;
+
+
+      ContentValues values = new ContentValues();
+      values.put(MovieItem.COLUMN_ID, id);
+      values.put(MovieItem.COLUMN_TITLE, title);
+      values.put(MovieItem.COLUMN_OVERVIEW, overview);
+      values.put(MovieItem.COLUMN_RELEASE_DATE, releaseDate);
+      values.put(MovieItem.COLUMN_ORIGINAL_TITLE,originalTitle);
+      values.put(MovieItem.COLUMN_ORIGINAL_LANGUAGE,originalLanguage);
+      values.put(MovieItem.COLUMN_GENRES_ID,genres);
+      values.put(MovieItem.COLUMN_VOTE_COUNT,voteCount);
+      values.put(MovieItem.COLUMN_VOTE_AVERAGE,voteAverage);
+      values.put(MovieItem.COLUMN_POPULARITY,popularity);
+      values.put(MovieItem.COLUMN_POSTER_PATH,posterPath);
+      values.put(MovieItem.COLUMN_BACKDROP_PATH,backdropPath);
+      values.put(MovieItem.COLUMN_VIDEO,video);
+      values.put(MovieItem.COLUMN_ADULT,adult);
+      values.put(MovieItem.COLUMN_POSTER_BLOB,posterBlob);
+      values.put(MovieItem.COLUMN_BACKDROP_BLOB,backdropBlob);
+//check if exists to update...later...
+      //if (mCurrentProductUri == null) {
+
+          Uri newUri = MyApplication.getAppContext().getContentResolver().insert(MovieItem.CONTENT_URI, values);
+          if (newUri == null) {
+             // Toast.makeText(this, str_save_fail, Toast.LENGTH_SHORT).show();
+          } else {
+            //  Toast.makeText(this, str_save_success, Toast.LENGTH_SHORT).show();
+          }
+      /*} else {
+          int rowsAffected = getContentResolver().update(mCurrentProductUri, values,
+                  null, null);
+          if (rowsAffected == 0) {
+              Toast.makeText(this, str_update_fail, Toast.LENGTH_SHORT).show();
+          } else {
+              Toast.makeText(this, str_update_success, Toast.LENGTH_SHORT).show();
+              finish();
+          }*/
+      }
+
     /**
      *
      * @param popularOrRated wheather to check for most popular movies or for top rated

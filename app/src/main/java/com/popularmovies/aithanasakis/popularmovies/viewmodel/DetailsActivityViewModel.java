@@ -31,6 +31,7 @@ import timber.log.Timber;
 public class DetailsActivityViewModel extends ViewModel{
     private static boolean internetState = false;
     private static Movie selectedMovie;
+    public static boolean isFavorite = true;
     private MediatorLiveData<List<MovieVideos>> videosListObservable;
     private MediatorLiveData<List<MovieReviews>> reviewsListObservable;
     @Inject
@@ -43,8 +44,13 @@ public class DetailsActivityViewModel extends ViewModel{
         MyApplication.getMyApplication().getMainActivityViewModelComponent().inject(this);
     }
 
+    public void storeFavorite(byte[] posterBlob ,byte[] backdropBlob ){
+        popularRepository.storeFavorite(selectedMovie,posterBlob,backdropBlob);
+    }
 
-
+    public void deleteFavorite(){
+        popularRepository.deleteFavorite(selectedMovie);
+    }
     public Movie getSelectedMovie() {
         return selectedMovie;
     }
@@ -53,6 +59,7 @@ public class DetailsActivityViewModel extends ViewModel{
         this.selectedMovie = selectedMovie;
 
     }
+
     public void requestMovieDetails(){
         reviewsListObservable.addSource(
                 popularRepository.getMovieReviewsFromWeb(selectedMovie.getId(), BuildConfig.THEMOVIEDB_API_KEY),

@@ -8,7 +8,6 @@ import com.popularmovies.aithanasakis.popularmovies.dagger2.AppModule;
 import com.popularmovies.aithanasakis.popularmovies.dagger2.DaggerMainActivityViewModelComponent;
 import com.popularmovies.aithanasakis.popularmovies.dagger2.MainActivityViewModelComponent;
 import com.popularmovies.aithanasakis.popularmovies.dagger2.PopularMoviesRepositoryModule;
-import com.popularmovies.aithanasakis.popularmovies.viewmodel.MainActivityViewModel;
 
 import timber.log.Timber;
 
