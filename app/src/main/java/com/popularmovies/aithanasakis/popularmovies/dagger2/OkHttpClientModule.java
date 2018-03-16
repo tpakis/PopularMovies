@@ -24,7 +24,7 @@ public class OkHttpClientModule {
         return new OkHttpClient()
                 .newBuilder()
                 .cache(cache)
-                .addInterceptor(new StethoInterceptor())
+                .addNetworkInterceptor(new StethoInterceptor())
                 .build();
     }
 

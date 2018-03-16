@@ -54,8 +54,13 @@ public class Movie implements Parcelable {
     @SerializedName("release_date")
     @Expose
     private String releaseDate;
+    @Expose
+    private byte[] posterBlob;
+    @Expose
+    private byte[] backdropBlob;
 
-    public Movie(Integer voteCount, Integer id, Boolean video, Double voteAverage, String title, Double popularity, String posterPath, String originalLanguage, String originalTitle, List<Integer> genreIds, String backdropPath, Boolean adult, String overview, String releaseDate) {
+    public Movie(Integer voteCount, Integer id, Boolean video, Double voteAverage, String title, Double popularity, String posterPath, String originalLanguage,
+                 String originalTitle, List<Integer> genreIds, String backdropPath, Boolean adult, String overview, String releaseDate, byte[] posterBlob, byte[] backdropBlob) {
         this.voteCount = voteCount;
         this.id = id;
         this.video = video;
@@ -70,6 +75,8 @@ public class Movie implements Parcelable {
         this.adult = adult;
         this.overview = overview;
         this.releaseDate = releaseDate;
+        this.posterBlob = posterBlob;
+        this.backdropBlob = backdropBlob;
     }
 
     public Integer getVoteCount() {
@@ -184,6 +191,47 @@ public class Movie implements Parcelable {
         this.releaseDate = releaseDate;
     }
 
+    public byte[] getPosterBlob() {
+        return posterBlob;
+    }
+
+    public void setPosterBlob(byte[] posterBlob) {
+        this.posterBlob = posterBlob;
+    }
+
+    public byte[] getBackdropBlob() {
+        return backdropBlob;
+    }
+
+    public void setBackdropBlob(byte[] backdropBlob) {
+        this.backdropBlob = backdropBlob;
+    }
+
+
+
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "voteCount=" + voteCount +
+                ", id=" + id +
+                ", video=" + video +
+                ", voteAverage=" + voteAverage +
+                ", title='" + title + '\'' +
+                ", popularity=" + popularity +
+                ", posterPath='" + posterPath + '\'' +
+                ", originalLanguage='" + originalLanguage + '\'' +
+                ", originalTitle='" + originalTitle + '\'' +
+                ", genreIds=" + genreIds +
+                ", backdropPath='" + backdropPath + '\'' +
+                ", adult=" + adult +
+                ", overview='" + overview + '\'' +
+                ", posterBlob=" + posterBlob +
+                ", backdropBlob='" + backdropBlob + '\'' +
+                ", releaseDate='" + releaseDate + '\'' +
+                '}';
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -205,9 +253,8 @@ public class Movie implements Parcelable {
         dest.writeValue(this.adult);
         dest.writeString(this.overview);
         dest.writeString(this.releaseDate);
-    }
-
-    public Movie() {
+        dest.writeByteArray(this.posterBlob);
+        dest.writeByteArray(this.backdropBlob);
     }
 
     protected Movie(Parcel in) {
@@ -226,9 +273,11 @@ public class Movie implements Parcelable {
         this.adult = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.overview = in.readString();
         this.releaseDate = in.readString();
+        this.posterBlob = in.createByteArray();
+        this.backdropBlob = in.createByteArray();
     }
 
-    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
         @Override
         public Movie createFromParcel(Parcel source) {
             return new Movie(source);
@@ -239,24 +288,4 @@ public class Movie implements Parcelable {
             return new Movie[size];
         }
     };
-
-    @Override
-    public String toString() {
-        return "Movie{" +
-                "voteCount=" + voteCount +
-                ", id=" + id +
-                ", video=" + video +
-                ", voteAverage=" + voteAverage +
-                ", title='" + title + '\'' +
-                ", popularity=" + popularity +
-                ", posterPath='" + posterPath + '\'' +
-                ", originalLanguage='" + originalLanguage + '\'' +
-                ", originalTitle='" + originalTitle + '\'' +
-                ", genreIds=" + genreIds +
-                ", backdropPath='" + backdropPath + '\'' +
-                ", adult=" + adult +
-                ", overview='" + overview + '\'' +
-                ", releaseDate='" + releaseDate + '\'' +
-                '}';
-    }
 }

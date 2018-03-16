@@ -58,7 +58,7 @@ public class LocalDBContentProvider extends ContentProvider{
                 cursor = database.query(MovieItem.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case ITEM_ID:
-                selection = MovieItem._ID + "=?";
+                selection = MovieItem.COLUMN_ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 cursor = database.query(MovieItem.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;

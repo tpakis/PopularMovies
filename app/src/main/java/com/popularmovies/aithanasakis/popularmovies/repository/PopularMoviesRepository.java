@@ -1,8 +1,13 @@
 package com.popularmovies.aithanasakis.popularmovies.repository;
 
+
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.ContentValues;
+
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -52,11 +57,25 @@ public class PopularMoviesRepository {
         return MOVIESREPOSITORY;
     }
 */
+
+
+  public Boolean isFavorite(Movie movie){
+        Uri uri = Uri.withAppendedPath(MovieItem.CONTENT_URI,movie.getId().toString());
+        String[] projection = {
+                MovieItem.COLUMN_ID
+          };
+        Cursor c = MyApplication.getAppContext().getContentResolver().query(uri,projection,null,null,null);
+        if (c != null) {
+            return (c.getCount() > 0);
+        }else {
+            return false;
+        }
+    }
   public void deleteFavorite(Movie movie){
       Uri uri = Uri.withAppendedPath(MovieItem.CONTENT_URI,movie.getId().toString());
       MyApplication.getAppContext().getContentResolver().delete(uri,"",null);
   }
-  public void storeFavorite(Movie movie, byte[] posterBlob,byte[] backdropBlob ){
+  public void storeFavorite(Movie movie){
       int id = movie.getId();
       String title = movie.getTitle();
       String overview = movie.getOverview();
@@ -69,6 +88,8 @@ public class PopularMoviesRepository {
       double popularity = movie.getPopularity();
       String posterPath = movie.getPosterPath();
       String backdropPath = movie.getBackdropPath();
+      byte[] posterBlob = movie.getPosterBlob();
+      byte[] backdropBlob = movie.getPosterBlob();
       int video = movie.getVideo() ? 1 :0;
       int adult = movie.getAdult() ? 1 :0;
 

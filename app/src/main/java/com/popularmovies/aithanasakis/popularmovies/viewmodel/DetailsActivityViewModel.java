@@ -31,25 +31,31 @@ import timber.log.Timber;
 public class DetailsActivityViewModel extends ViewModel{
     private static boolean internetState = false;
     private static Movie selectedMovie;
-    public static boolean isFavorite = true;
+    private MutableLiveData<Boolean> isFavorite = new MutableLiveData<>();
     private MediatorLiveData<List<MovieVideos>> videosListObservable;
     private MediatorLiveData<List<MovieReviews>> reviewsListObservable;
+
     @Inject
     public PopularMoviesRepository popularRepository;
     public DetailsActivityViewModel() {
         selectedMovie = new Movie(0,0,false,0.0,"",0.0,"",
-                "","",null,"",false,"","");
+                "","",null,"",false,"","",null,null);
         videosListObservable =  new MediatorLiveData<>();
         reviewsListObservable =  new MediatorLiveData<>();
+        isFavorite.setValue(false);
         MyApplication.getMyApplication().getMainActivityViewModelComponent().inject(this);
     }
 
     public void storeFavorite(byte[] posterBlob ,byte[] backdropBlob ){
-        popularRepository.storeFavorite(selectedMovie,posterBlob,backdropBlob);
+        selectedMovie.setBackdropBlob(backdropBlob);
+        selectedMovie.setPosterBlob(posterBlob);
+        popularRepository.storeFavorite(selectedMovie);
+        isFavorite.setValue(true);
     }
 
     public void deleteFavorite(){
         popularRepository.deleteFavorite(selectedMovie);
+        isFavorite.setValue(false);
     }
     public Movie getSelectedMovie() {
         return selectedMovie;
@@ -57,6 +63,8 @@ public class DetailsActivityViewModel extends ViewModel{
 
     public void setSelectedMovie(Movie selectedMovie) {
         this.selectedMovie = selectedMovie;
+        //postvalue asynchronus set value ui thread
+        isFavorite.postValue(popularRepository.isFavorite(selectedMovie));
 
     }
 
@@ -80,6 +88,9 @@ public class DetailsActivityViewModel extends ViewModel{
     public LiveData<List<MovieReviews>> getReviewsListObservable() {
 
         return reviewsListObservable;
+    }
+    public LiveData<Boolean> getIsFavorite(){
+        return isFavorite;
     }
 
     public void setInternetState(boolean internetState) {

@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.popularmovies.aithanasakis.popularmovies.MyApplication;
 import com.popularmovies.aithanasakis.popularmovies.R;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieReviews;
@@ -70,7 +71,7 @@ public class DetailsActivity extends AppCompatActivity {
     private DetailsActivityViewModel viewModel;
     private static final String BUNDLE_MOVIE = "item";
     DetailsFragment detailsFragment;
-
+    Boolean isFavorite=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +116,12 @@ public class DetailsActivity extends AppCompatActivity {
                }
             }
         });
+        viewModel.getIsFavorite().observe(DetailsActivity.this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean isFavorite) {
+                changeFabIccn(isFavorite);
+            }
+        });
         viewModel.requestMovieDetails();
     }
 
@@ -124,6 +131,15 @@ public class DetailsActivity extends AppCompatActivity {
         checkForInternet();
     }
 
+    private void changeFabIccn(Boolean isFavorite){
+        this.isFavorite = isFavorite;
+        if (isFavorite){
+            fab.setImageResource(R.drawable.ic_star_black_24dp);
+        }else{
+            fab.setImageResource(R.drawable.ic_star_border_black_24dp);
+        }
+
+    }
     private void checkForInternet() {
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -140,7 +156,7 @@ public class DetailsActivity extends AppCompatActivity {
     @OnClick(R.id.fab)
     public void onFabClicked(View view){
         if (detailsFragment!=null) {
-           if (viewModel.isFavorite){
+           if (isFavorite){
                viewModel.deleteFavorite();
            }else{
                viewModel.storeFavorite(imageViewToByte(detailsFragment.detailsPoster),imageViewToByte(backdrop));
