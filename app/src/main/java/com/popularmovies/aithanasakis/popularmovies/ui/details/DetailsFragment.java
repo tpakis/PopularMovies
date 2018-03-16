@@ -98,14 +98,27 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
         View viewgroup = inflater.inflate(R.layout.details_fragment, container, false);
         unbinder = ButterKnife.bind(this, viewgroup);
         detailsTitle.setText(selectedMovie.getTitle());
-        RequestOptions options = new RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                .centerCrop()
-                .dontTransform()
-                .placeholder(R.drawable.ic_public_black_24dp)
-                .error(R.mipmap.ic_launcher_round);
-        Glide.with(detailsPoster.getContext()).load(movieDBImagePath+selectedMovie.getPosterPath()).apply(options)
-                .into(detailsPoster);
+
+        if ((!viewModel.getInternetState())&& selectedMovie.getPosterBlob() !=null) {
+            RequestOptions options = new RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .centerCrop()
+                    .dontTransform()
+                    .placeholder(R.drawable.ic_public_black_24dp)
+                    .error(R.mipmap.ic_launcher_round);
+            Glide.with(detailsPoster.getContext()).load(selectedMovie.getPosterBlob()).apply(options)
+                    .into(detailsPoster);
+        }else{
+            RequestOptions options = new RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .centerCrop()
+                    .dontTransform()
+                    .placeholder(R.drawable.ic_public_black_24dp)
+                    .error(R.mipmap.ic_launcher_round);
+            Glide.with(detailsPoster.getContext()).load(movieDBImagePath + selectedMovie.getPosterPath()).apply(options)
+                    .into(detailsPoster);
+        }
+
         detailsRatingbar.setRating( selectedMovie.getVoteAverage().floatValue());
         detailsRating.setText("tmdb Rating: " + selectedMovie.getVoteAverage().toString());
         detailsVotes.setText("Votes: "+selectedMovie.getVoteCount().toString());

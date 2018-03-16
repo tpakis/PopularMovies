@@ -39,27 +39,20 @@ import timber.log.Timber;
  */
 
 public class PopularMoviesRepository {
-    private static PopularMoviesRepository MOVIESREPOSITORY;
+
     //retrofit
 
     public MovieDBService mMovieDBService;
     private MutableLiveData<List<Movie>> moviesListObservable= new MutableLiveData<List<Movie>>();
+    private MutableLiveData<List<MovieVideos>> movieVideosObservable= new MutableLiveData<List<MovieVideos>>();
+    private MutableLiveData<List<MovieReviews>> movieReviewsObservable= new MutableLiveData<List<MovieReviews>>();
     //room to be implemented
     //private MovieDBDAO mMovieDBDAO;
     @Inject
     public PopularMoviesRepository(MovieDBService mMovieDBService) {
        this.mMovieDBService =mMovieDBService;
-        // Local db storage will be implemented
-        //mMovieDBDAO = MovieDB.getDatabase().getMovieDBDAO();
-    }
 
-  /*  public synchronized static PopularMoviesRepository getInstance() {
-        if (MOVIESREPOSITORY == null) {
-            MOVIESREPOSITORY = new PopularMoviesRepository();
-        }
-        return MOVIESREPOSITORY;
     }
-*/
 
 
   public Boolean isFavorite(Movie movie){
@@ -140,30 +133,9 @@ public class PopularMoviesRepository {
      * @param apiKey the tmdb api key of the user
      * @return
      */
-   /* private MutableLiveData<List<Movie>> getItemsListFromWeb(String popularOrRated, String apiKey) {
-        final MutableLiveData<List<Movie>> retlist = new MutableLiveData<>();
-        mMovieDBService.getItems(popularOrRated,apiKey).enqueue(new Callback<MovieDBResponse>() {
-            List<Movie> items = new ArrayList<Movie>();
-
-            @Override
-            public void onResponse(Call<MovieDBResponse> call, Response<MovieDBResponse> response) {
-                if (response.isSuccessful()) {
-                 items.addAll(response.body().getResults());
-                    retlist.setValue(items);
-                    // addAllToDB(itemsData);
-                }
-            }
-            @Override
-            public void onFailure(Call<MovieDBResponse> call, Throwable t) {
-                Timber.v( t.getLocalizedMessage());
-            }
-        });
-
-        return retlist;
-    }*/
 
     private void getItemsListFromWeb(String popularOrRated, String apiKey) {
-        final List<Movie> retlist = new ArrayList<Movie>();
+
         mMovieDBService.getItems(popularOrRated,apiKey).enqueue(new Callback<MovieDBResponse>() {
             List<Movie> items = new ArrayList<Movie>();
 
@@ -171,7 +143,6 @@ public class PopularMoviesRepository {
             public void onResponse(Call<MovieDBResponse> call, Response<MovieDBResponse> response) {
                 if (response.isSuccessful()) {
                     items.addAll(response.body().getResults());
-                    retlist.addAll(items);
                     setLiveData(items);
                     // addAllToDB(itemsData);
                 }
@@ -182,11 +153,9 @@ public class PopularMoviesRepository {
             }
         });
 
-        setLiveData(retlist);
     }
 
-    public MutableLiveData<List<MovieReviews>> getMovieReviewsFromWeb(int movieId, String apiKey) {
-        final MutableLiveData<List<MovieReviews>> retlist = new MutableLiveData<>();
+    public void getMovieReviewsFromWeb(int movieId, String apiKey) {
         mMovieDBService.getMovieReviews(movieId,apiKey).enqueue(new Callback<MovieDBReviewsResponse>() {
             List<MovieReviews> items = new ArrayList<MovieReviews>();
 
@@ -194,8 +163,7 @@ public class PopularMoviesRepository {
             public void onResponse(Call<MovieDBReviewsResponse> call, Response<MovieDBReviewsResponse> response) {
                 if (response.isSuccessful()) {
                     items.addAll(response.body().getResults());
-                    retlist.setValue(items);
-
+                    setLiveDataReviews(items);
                 }
             }
             @Override
@@ -204,11 +172,9 @@ public class PopularMoviesRepository {
             }
         });
 
-        return retlist;
     }
 
-    public MutableLiveData<List<MovieVideos>> getMovieVideosFromWeb(int movieId, String apiKey) {
-        final MutableLiveData<List<MovieVideos>> retlist = new MutableLiveData<>();
+    public void getMovieVideosFromWeb(int movieId, String apiKey) {
         mMovieDBService.getMovieVideos(movieId,apiKey).enqueue(new Callback<MovieDBVideosResponse>() {
             List<MovieVideos> items = new ArrayList<MovieVideos>();
 
@@ -216,7 +182,7 @@ public class PopularMoviesRepository {
             public void onResponse(Call<MovieDBVideosResponse> call, Response<MovieDBVideosResponse> response) {
                 if (response.isSuccessful()) {
                     items.addAll(response.body().getResults());
-                    retlist.setValue(items);
+                    setLiveDataVideos(items);
                 }
             }
             @Override
@@ -225,12 +191,10 @@ public class PopularMoviesRepository {
             }
         });
 
-        return retlist;
     }
 
     @SuppressLint("StaticFieldLeak")
     private void getItemsListFromDB() {
-        final MutableLiveData<List<Movie>> retlist = new MutableLiveData<>();
         new AsyncTask<Void,Void,Cursor>(){
             List<Movie> items = new ArrayList<Movie>();
             @Override
@@ -293,10 +257,24 @@ public class PopularMoviesRepository {
     public MutableLiveData<List<Movie>> getLiveData(){
         return moviesListObservable;
     }
+
+    private void setLiveDataVideos(List<MovieVideos> entries){
+        movieVideosObservable.setValue(entries);
+    }
+    public MutableLiveData<List<MovieVideos>> getLiveDataVideos(){
+        return movieVideosObservable;
+    }
+    private void setLiveDataReviews(List<MovieReviews> entries){
+        movieReviewsObservable.setValue(entries);
+    }
+    public MutableLiveData<List<MovieReviews>> getLiveDataReviews(){
+        return movieReviewsObservable;
+    }
+
     public void getMoviesList(String query, String apiKey, boolean internetState) {
         //final  MutableLiveData<List<Movie>> data = new MutableLiveData<>();
         //data.setValue(getItemsListFromWeb(query));
-        if (query == "favorites"){
+        if (query.equals("favorites")){
             getItemsListFromDB();
 
         }

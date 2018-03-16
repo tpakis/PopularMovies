@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.support.annotation.Nullable;
 
 import com.popularmovies.aithanasakis.popularmovies.BuildConfig;
 import com.popularmovies.aithanasakis.popularmovies.MyApplication;
@@ -16,6 +17,7 @@ import com.popularmovies.aithanasakis.popularmovies.repository.PopularMoviesRepo
 
 import java.util.ArrayList;
 import java.util.List;
+import android.arch.lifecycle.Observer;
 
 import javax.inject.Inject;
 
@@ -44,6 +46,18 @@ public class DetailsActivityViewModel extends ViewModel{
         reviewsListObservable =  new MediatorLiveData<>();
         isFavorite.setValue(false);
         MyApplication.getMyApplication().getMainActivityViewModelComponent().inject(this);
+        videosListObservable.addSource(popularRepository.getLiveDataVideos(), new Observer<List<MovieVideos>>() {
+            @Override
+            public void onChanged(@Nullable List<MovieVideos> videos) {
+                videosListObservable.setValue(videos);
+            }
+        });
+        reviewsListObservable.addSource(popularRepository.getLiveDataReviews(), new Observer<List<MovieReviews>>() {
+            @Override
+            public void onChanged(@Nullable List<MovieReviews> reviews) {
+                reviewsListObservable.setValue(reviews);
+            }
+        });
     }
 
     public void storeFavorite(byte[] posterBlob ,byte[] backdropBlob ){
@@ -69,15 +83,7 @@ public class DetailsActivityViewModel extends ViewModel{
     }
 
     public void requestMovieDetails(){
-        reviewsListObservable.addSource(
-                popularRepository.getMovieReviewsFromWeb(selectedMovie.getId(), BuildConfig.THEMOVIEDB_API_KEY),
-                apiResponse -> reviewsListObservable.setValue(apiResponse)
-        );
-        videosListObservable.addSource(
-                popularRepository.getMovieVideosFromWeb(selectedMovie.getId(), BuildConfig.THEMOVIEDB_API_KEY),
-                apiResponse -> videosListObservable.setValue(apiResponse)
-        );
-
+        popularRepository.getMovieReviewsFromWeb(selectedMovie.getId(), BuildConfig.THEMOVIEDB_API_KEY);
         popularRepository.getMovieVideosFromWeb(selectedMovie.getId(), BuildConfig.THEMOVIEDB_API_KEY);
     }
 
@@ -97,4 +103,8 @@ public class DetailsActivityViewModel extends ViewModel{
         this.internetState = internetState;
         Timber.v(String.valueOf(internetState));
     }
+    public boolean getInternetState(){
+       return internetState;
+    }
+
 }

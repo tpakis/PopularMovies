@@ -63,7 +63,7 @@ public class DetailsActivity extends AppCompatActivity {
     FloatingActionButton fab;
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
-    @BindString(R.string.MOVIE_DB_IMAGE_PATH)
+    @BindString(R.string.MOVIE_DB_BACKDROP_PATH)
     String movieDBImagePath;
     private Movie selectedMovie;
     NetworkBroadcastReceiver mNetworkReceiver;
@@ -99,15 +99,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
         collapsingToolbarLayout.setTitle(selectedMovie.getTitle());
         collapsingToolbarLayout.setExpandedTitleColor(ContextCompat.getColor(this, android.R.color.transparent));
-        //load backdrop photo
-        RequestOptions options = new RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                .centerCrop()
-                .dontTransform()
-                .placeholder(R.drawable.ic_public_black_24dp)
-                .error(R.mipmap.ic_launcher_round);
-        Glide.with(backdrop.getContext()).load(movieDBImagePath + selectedMovie.getBackdropPath()).apply(options)
-                .into(backdrop);
+
         viewModel.getReviewsListObservable().observe(DetailsActivity.this, new Observer<List<MovieReviews>>() {
             @Override
             public void onChanged(@Nullable List<MovieReviews> myMovieItemsList) {
@@ -129,6 +121,27 @@ public class DetailsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         checkForInternet();
+        //load backdrop photo
+
+        if ((!viewModel.getInternetState())&& selectedMovie.getBackdropBlob() !=null) {
+            RequestOptions options = new RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .centerCrop()
+                    .dontTransform()
+                    .placeholder(R.drawable.ic_public_black_24dp)
+                    .error(R.mipmap.ic_launcher_round);
+            Glide.with(backdrop.getContext()).load(selectedMovie.getBackdropBlob()).apply(options)
+                    .into(backdrop);
+        }else{
+            RequestOptions options = new RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .centerCrop()
+                    .dontTransform()
+                    .placeholder(R.drawable.ic_public_black_24dp)
+                    .error(R.mipmap.ic_launcher_round);
+            Glide.with(backdrop.getContext()).load(movieDBImagePath + selectedMovie.getBackdropPath()).apply(options)
+                    .into(backdrop);
+        }
     }
 
     private void changeFabIccn(Boolean isFavorite){
