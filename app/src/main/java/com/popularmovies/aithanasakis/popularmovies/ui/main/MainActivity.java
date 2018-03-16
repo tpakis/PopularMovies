@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final String SORT_BY_POPULARITY = "popular";
     private static final String SORT_BY_RATING = "top_rated";
+    private static final String SORT_BY_FAVORITE = "favorites";
     private static final String BUNDLE_MOVIE = "item";
     @BindView(R.id.rv_results)
     public RecyclerView rvMovies;
@@ -156,6 +157,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.sort_by_rating:
                 callForData(SORT_BY_RATING);
+                break;
+            case R.id.sort_by_favorites:
+                callForData(SORT_BY_FAVORITE);
                 break;
         }
 

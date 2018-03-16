@@ -1,12 +1,14 @@
 package com.popularmovies.aithanasakis.popularmovies.repository;
 
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.ContentValues;
 
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -41,6 +43,7 @@ public class PopularMoviesRepository {
     //retrofit
 
     public MovieDBService mMovieDBService;
+    private MutableLiveData<List<Movie>> moviesListObservable;
     //room to be implemented
     //private MovieDBDAO mMovieDBDAO;
     @Inject
@@ -201,6 +204,68 @@ public class PopularMoviesRepository {
         return retlist;
     }
 
+    @SuppressLint("StaticFieldLeak")
+    private void getItemsListFromDB() {
+        final MutableLiveData<List<Movie>> retlist = new MutableLiveData<>();
+        new AsyncTask<Void,Void,Cursor>(){
+            List<Movie> items = new ArrayList<Movie>();
+            @Override
+            protected Cursor doInBackground(Void... params) {
+                String[] projection = {
+                        MovieItem.COLUMN_ID,
+                        MovieItem.COLUMN_TITLE,
+                        MovieItem.COLUMN_OVERVIEW,
+                        MovieItem.COLUMN_VOTE_AVERAGE,
+                        MovieItem.COLUMN_VOTE_COUNT,
+                        MovieItem.COLUMN_POPULARITY,
+                        MovieItem.COLUMN_RELEASE_DATE,
+                        MovieItem.COLUMN_ADULT,
+                        MovieItem.COLUMN_VIDEO,
+                        MovieItem.COLUMN_GENRES_ID,
+                        MovieItem.COLUMN_ORIGINAL_TITLE,
+                        MovieItem.COLUMN_ORIGINAL_LANGUAGE,
+                        MovieItem.COLUMN_POSTER_PATH,
+                        MovieItem.COLUMN_POSTER_BLOB,
+                        MovieItem.COLUMN_BACKDROP_PATH,
+                        MovieItem.COLUMN_BACKDROP_BLOB
+                };
+                return  MyApplication.getAppContext().getContentResolver().query(MovieItem.CONTENT_URI,projection,null,null,null);
+            }
+            @Override
+            protected void onPostExecute(Cursor entries) {
+                try {
+                    while (entries.moveToNext()) {
+                        Movie movie = new Movie(0,0,false,0.0,"",0.0,"",
+                                "","",null,"",false,"","",null,null);
+                        movie.setId(entries.getInt(0));
+                        movie.setTitle(entries.getString(1));
+                        movie.setOverview(entries.getString(2));
+                        movie.setVoteAverage(entries.getDouble(3));
+                        movie.setVoteCount(entries.getInt(4));
+                        movie.setPopularity(entries.getDouble(5));
+                        movie.setReleaseDate(entries.getString(6));
+                        movie.setAdult(entries.getInt(7)!=0);
+                        movie.setVideo(entries.getInt(8)!=0);
+//                        movie.setGenreIds(entries.getString(9));
+                        movie.setOriginalTitle(entries.getString(10));
+                        movie.setOriginalLanguage(entries.getString(11));
+                        movie.setPosterPath(entries.getString(12));
+                        movie.setPosterBlob(entries.getBlob(13));
+                        movie.setBackdropPath(entries.getString(14));
+                        movie.setBackdropBlob(entries.getBlob(15));
+                        items.add(movie);
+                   }
+                   setLiveData(items);
+                } finally {
+                    entries.close();
+                }
+            }
+        }.execute();
+    }
+
+    private void setLiveData(List<Movie> entries){
+        moviesListObservable.setValue(entries);
+    }
 
 
     /**
@@ -213,6 +278,10 @@ public class PopularMoviesRepository {
     public MutableLiveData<List<Movie>> getMoviesList(String query, String apiKey, boolean internetState) {
         //final  MutableLiveData<List<Movie>> data = new MutableLiveData<>();
         //data.setValue(getItemsListFromWeb(query));
+       if (query == "favorites"){
+           getItemsListFromDB();
+           return moviesListObservable;
+       }
         if (internetState) {
             return getItemsListFromWeb(query,apiKey);
         } else {
