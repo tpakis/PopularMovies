@@ -169,11 +169,8 @@ public class DetailsActivity extends AppCompatActivity {
     @OnClick(R.id.fab)
     public void onFabClicked(View view){
         if (detailsFragment!=null) {
-           if (isFavorite){
-               viewModel.deleteFavorite();
-           }else{
-               viewModel.storeFavorite(imageViewToByte(detailsFragment.detailsPoster),imageViewToByte(backdrop));
-           }
+            viewModel.fabClicked(imageViewToByte(detailsFragment.detailsPoster),imageViewToByte(backdrop));
+
         }
     }
 

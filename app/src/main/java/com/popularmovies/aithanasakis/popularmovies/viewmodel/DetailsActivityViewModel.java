@@ -106,5 +106,12 @@ public class DetailsActivityViewModel extends ViewModel{
     public boolean getInternetState(){
        return internetState;
     }
+    public void fabClicked(byte[] posterBlob ,byte[] backdropBlob ){
+        if (isFavorite.getValue()){
+            deleteFavorite();
+        }else{
+            storeFavorite(posterBlob,backdropBlob);
+        }
+    }
 
 }
