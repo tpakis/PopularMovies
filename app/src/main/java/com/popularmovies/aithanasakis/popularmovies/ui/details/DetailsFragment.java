@@ -22,8 +22,10 @@ import com.bumptech.glide.request.RequestOptions;
 import com.popularmovies.aithanasakis.popularmovies.R;
 import com.popularmovies.aithanasakis.popularmovies.adapter.ReviewsAdapter;
 import com.popularmovies.aithanasakis.popularmovies.adapter.StaggeredMoviesAdapter;
+import com.popularmovies.aithanasakis.popularmovies.adapter.VideosAdapter;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieReviews;
+import com.popularmovies.aithanasakis.popularmovies.model.MovieVideos;
 import com.popularmovies.aithanasakis.popularmovies.ui.main.MainActivity;
 import com.popularmovies.aithanasakis.popularmovies.viewmodel.DetailsActivityViewModel;
 
@@ -39,7 +41,9 @@ import timber.log.Timber;
  * Created by 3piCerberus on 06/03/2018.
  */
 
-public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsAdapterOnClickHandler{
+public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsAdapterOnClickHandler,
+    VideosAdapter.VideosAdapterOnClickHandler{
+
     @BindView(R.id.details_poster)
     ImageView detailsPoster;
     @BindView(R.id.details_title)
@@ -75,8 +79,9 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
     private DetailsActivity parent;
     private Movie selectedMovie;
     private ReviewsAdapter mReviewsAdapter;
+    private VideosAdapter mVideosAdapter;
     private LinearLayoutManager mLinearLayoutManager;
-
+    private LinearLayoutManager mLinearLayoutManagerVideos;
     public DetailsFragment() {
 
     }
@@ -125,14 +130,17 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
         detailsReleaseDate.setText("Release Date: "+selectedMovie.getReleaseDate());
         detailsOverviewText.setText(selectedMovie.getOverview());
 
-        //getting ready for phase 2
-        //detailsVideosLabel.setVisibility(View.GONE);
-      //  detailsReviewsLabel.setVisibility(View.GONE);
-        //recyclerview Reviews
+        //recyclerview Reviews,Videos
         mLinearLayoutManager = new LinearLayoutManager(getContext());
+        mLinearLayoutManagerVideos = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL,false);
         detailsReviewsRv.setLayoutManager(mLinearLayoutManager);
+        detailsVideosRv.setLayoutManager(mLinearLayoutManagerVideos);
+        mVideosAdapter = new VideosAdapter(DetailsFragment.this,getContext());
         mReviewsAdapter = new ReviewsAdapter(DetailsFragment.this);
+        detailsVideosRv.setAdapter(mVideosAdapter);
         detailsReviewsRv.setAdapter(mReviewsAdapter);
+
         return viewgroup;
     }
 
@@ -143,11 +151,18 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
     }
 
     @Override
-    public void onClick(MovieReviews selectedMovieItem) {
+    public void onClick(MovieReviews selectedReviewItem) {
+
+    }
+    @Override
+    public void onClick(MovieVideos selectedVideoItem) {
 
     }
 
     public void setRvReviewsResults(@Nullable List<MovieReviews> myMovieItemsList){
         mReviewsAdapter.setReviewsResults(myMovieItemsList);
+    }
+    public void setRvVideosResults(@Nullable List<MovieVideos> myMovieItemsList){
+        mVideosAdapter.setVideosResults(myMovieItemsList);
     }
 }

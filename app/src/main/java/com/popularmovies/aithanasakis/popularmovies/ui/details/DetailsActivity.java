@@ -32,6 +32,7 @@ import com.popularmovies.aithanasakis.popularmovies.MyApplication;
 import com.popularmovies.aithanasakis.popularmovies.R;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieReviews;
+import com.popularmovies.aithanasakis.popularmovies.model.MovieVideos;
 import com.popularmovies.aithanasakis.popularmovies.ui.main.MainActivity;
 import com.popularmovies.aithanasakis.popularmovies.viewmodel.DetailsActivityViewModel;
 
@@ -106,6 +107,14 @@ public class DetailsActivity extends AppCompatActivity {
                if (detailsFragment!=null) {
                    detailsFragment.setRvReviewsResults(myMovieItemsList);
                }
+            }
+        });
+        viewModel.getVideosListObservable().observe(DetailsActivity.this, new Observer<List<MovieVideos>>() {
+            @Override
+            public void onChanged(@Nullable List<MovieVideos> myMovieItemsList) {
+                if (detailsFragment!=null) {
+                    detailsFragment.setRvVideosResults(myMovieItemsList);
+                }
             }
         });
         viewModel.getIsFavorite().observe(DetailsActivity.this, new Observer<Boolean>() {

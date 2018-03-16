@@ -6,10 +6,9 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/movie_video_thumbnail"
-        android:layout_width="207dp"
-        android:layout_height="115dp"
-        tools:src="@color/black"/>
+        android:id="@+id/movie_video_image"
+        android:layout_width="@dimen/image_width"
+        android:layout_height="@dimen/image_height" />
 
     <ImageView
         android:layout_width="wrap_content"
