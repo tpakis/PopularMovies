@@ -43,7 +43,7 @@ public class PopularMoviesRepository {
     //retrofit
 
     public MovieDBService mMovieDBService;
-    private MutableLiveData<List<Movie>> moviesListObservable;
+    private MutableLiveData<List<Movie>> moviesListObservable= new MutableLiveData<List<Movie>>();
     //room to be implemented
     //private MovieDBDAO mMovieDBDAO;
     @Inject
@@ -140,7 +140,7 @@ public class PopularMoviesRepository {
      * @param apiKey the tmdb api key of the user
      * @return
      */
-    private MutableLiveData<List<Movie>> getItemsListFromWeb(String popularOrRated, String apiKey) {
+   /* private MutableLiveData<List<Movie>> getItemsListFromWeb(String popularOrRated, String apiKey) {
         final MutableLiveData<List<Movie>> retlist = new MutableLiveData<>();
         mMovieDBService.getItems(popularOrRated,apiKey).enqueue(new Callback<MovieDBResponse>() {
             List<Movie> items = new ArrayList<Movie>();
@@ -160,6 +160,29 @@ public class PopularMoviesRepository {
         });
 
         return retlist;
+    }*/
+
+    private void getItemsListFromWeb(String popularOrRated, String apiKey) {
+        final List<Movie> retlist = new ArrayList<Movie>();
+        mMovieDBService.getItems(popularOrRated,apiKey).enqueue(new Callback<MovieDBResponse>() {
+            List<Movie> items = new ArrayList<Movie>();
+
+            @Override
+            public void onResponse(Call<MovieDBResponse> call, Response<MovieDBResponse> response) {
+                if (response.isSuccessful()) {
+                    items.addAll(response.body().getResults());
+                    retlist.addAll(items);
+                    setLiveData(items);
+                    // addAllToDB(itemsData);
+                }
+            }
+            @Override
+            public void onFailure(Call<MovieDBResponse> call, Throwable t) {
+                Timber.v( t.getLocalizedMessage());
+            }
+        });
+
+        setLiveData(retlist);
     }
 
     public MutableLiveData<List<MovieReviews>> getMovieReviewsFromWeb(int movieId, String apiKey) {
@@ -172,6 +195,7 @@ public class PopularMoviesRepository {
                 if (response.isSuccessful()) {
                     items.addAll(response.body().getResults());
                     retlist.setValue(items);
+
                 }
             }
             @Override
@@ -266,7 +290,24 @@ public class PopularMoviesRepository {
     private void setLiveData(List<Movie> entries){
         moviesListObservable.setValue(entries);
     }
+    public MutableLiveData<List<Movie>> getLiveData(){
+        return moviesListObservable;
+    }
+    public void getMoviesList(String query, String apiKey, boolean internetState) {
+        //final  MutableLiveData<List<Movie>> data = new MutableLiveData<>();
+        //data.setValue(getItemsListFromWeb(query));
+        if (query == "favorites"){
+            getItemsListFromDB();
 
+        }
+        if (internetState) {
+            getItemsListFromWeb(query,apiKey);
+        } else {
+            //it will call getListFromDB
+            //  return getItemsListFromWeb(query,apiKey);
+            //     return getItemsListFromDB("%" + query + "%");
+        }
+    }
 
     /**
      * Public method to request data from the respository
@@ -275,20 +316,21 @@ public class PopularMoviesRepository {
      * @param internetState whether we have internet access or not
      * @return
      */
-    public MutableLiveData<List<Movie>> getMoviesList(String query, String apiKey, boolean internetState) {
+    /*public MutableLiveData<List<Movie>> getMoviesList(String query, String apiKey, boolean internetState) {
         //final  MutableLiveData<List<Movie>> data = new MutableLiveData<>();
         //data.setValue(getItemsListFromWeb(query));
        if (query == "favorites"){
            getItemsListFromDB();
-           return moviesListObservable;
+
        }
         if (internetState) {
-            return getItemsListFromWeb(query,apiKey);
+           getItemsListFromWeb(query,apiKey);
         } else {
             //it will call getListFromDB
-            return getItemsListFromWeb(query,apiKey);
+          //  return getItemsListFromWeb(query,apiKey);
        //     return getItemsListFromDB("%" + query + "%");
         }
+        return moviesListObservable;
     }
-
+*/
 }
