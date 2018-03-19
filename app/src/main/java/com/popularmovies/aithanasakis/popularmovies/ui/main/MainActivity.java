@@ -135,9 +135,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void permissionResultMulti(PermissionBean[] permissions) {
         //Toast.makeText(MainActivity.this, "MULTI PERMISSION RESULT " + Arrays.deepToString(permissions), Toast.LENGTH_LONG).show();
     }
+
     // Mayi library for permissions results
     private void permissionRationaleMulti(PermissionBean[] permissions, PermissionToken token) {
-      //  Toast.makeText(MainActivity.this, "Rationales for Multiple Permissions " + Arrays.deepToString(permissions), Toast.LENGTH_LONG).show();
+        //  Toast.makeText(MainActivity.this, "Rationales for Multiple Permissions " + Arrays.deepToString(permissions), Toast.LENGTH_LONG).show();
         token.continuePermissionRequest();
     }
 
@@ -151,18 +152,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        int stringId=R.string.sort_by_popularity;
         switch (id) {
             case R.id.sort_by_popularity:
+                stringId = R.string.sort_by_popularity;
                 callForData(SORT_BY_POPULARITY);
                 break;
             case R.id.sort_by_rating:
+                stringId = R.string.sort_by_rating;
                 callForData(SORT_BY_RATING);
                 break;
             case R.id.sort_by_favorites:
+                stringId = R.string.sort_by_favorites;
                 callForData(SORT_BY_FAVORITE);
                 break;
         }
-
+        setTitle(stringId);
         return super.onOptionsItemSelected(item);
     }
 

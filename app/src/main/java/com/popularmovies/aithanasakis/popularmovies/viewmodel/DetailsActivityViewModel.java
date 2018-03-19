@@ -9,41 +9,38 @@ import android.support.annotation.Nullable;
 import com.popularmovies.aithanasakis.popularmovies.BuildConfig;
 import com.popularmovies.aithanasakis.popularmovies.MyApplication;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
-import com.popularmovies.aithanasakis.popularmovies.model.MovieDBResponse;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieReviews;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieVideos;
-import com.popularmovies.aithanasakis.popularmovies.network.MovieDBService;
 import com.popularmovies.aithanasakis.popularmovies.repository.PopularMoviesRepository;
 
-import java.util.ArrayList;
+
 import java.util.List;
+
 import android.arch.lifecycle.Observer;
 
 import javax.inject.Inject;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+
 import timber.log.Timber;
 
 /**
  * Created by 3piCerberus on 28/02/2018.
  */
 
-public class DetailsActivityViewModel extends ViewModel{
+public class DetailsActivityViewModel extends ViewModel {
     private static boolean internetState = false;
     private static Movie selectedMovie;
+    @Inject
+    public PopularMoviesRepository popularRepository;
     private MutableLiveData<Boolean> isFavorite = new MutableLiveData<>();
     private MediatorLiveData<List<MovieVideos>> videosListObservable;
     private MediatorLiveData<List<MovieReviews>> reviewsListObservable;
 
-    @Inject
-    public PopularMoviesRepository popularRepository;
     public DetailsActivityViewModel() {
-        selectedMovie = new Movie(0,0,false,0.0,"",0.0,"",
-                "","",null,"",false,"","",null,null);
-        videosListObservable =  new MediatorLiveData<>();
-        reviewsListObservable =  new MediatorLiveData<>();
+        selectedMovie = new Movie(0, 0, false, 0.0, "", 0.0, "",
+                "", "", null, "", false, "", "", null, null);
+        videosListObservable = new MediatorLiveData<>();
+        reviewsListObservable = new MediatorLiveData<>();
         isFavorite.setValue(false);
         MyApplication.getMyApplication().getMainActivityViewModelComponent().inject(this);
         videosListObservable.addSource(popularRepository.getLiveDataVideos(), new Observer<List<MovieVideos>>() {
@@ -60,17 +57,18 @@ public class DetailsActivityViewModel extends ViewModel{
         });
     }
 
-    public void storeFavorite(byte[] posterBlob ,byte[] backdropBlob ){
+    public void storeFavorite(byte[] posterBlob, byte[] backdropBlob) {
         selectedMovie.setBackdropBlob(backdropBlob);
         selectedMovie.setPosterBlob(posterBlob);
         popularRepository.storeFavorite(selectedMovie);
         isFavorite.setValue(true);
     }
 
-    public void deleteFavorite(){
+    public void deleteFavorite() {
         popularRepository.deleteFavorite(selectedMovie);
         isFavorite.setValue(false);
     }
+
     public Movie getSelectedMovie() {
         return selectedMovie;
     }
@@ -82,7 +80,7 @@ public class DetailsActivityViewModel extends ViewModel{
 
     }
 
-    public void requestMovieDetails(){
+    public void requestMovieDetails() {
         popularRepository.getMovieReviewsFromWeb(selectedMovie.getId(), BuildConfig.THEMOVIEDB_API_KEY);
         popularRepository.getMovieVideosFromWeb(selectedMovie.getId(), BuildConfig.THEMOVIEDB_API_KEY);
     }
@@ -95,22 +93,25 @@ public class DetailsActivityViewModel extends ViewModel{
 
         return reviewsListObservable;
     }
-    public LiveData<Boolean> getIsFavorite(){
+
+    public LiveData<Boolean> getIsFavorite() {
         return isFavorite;
+    }
+
+    public boolean getInternetState() {
+        return internetState;
     }
 
     public void setInternetState(boolean internetState) {
         this.internetState = internetState;
         Timber.v(String.valueOf(internetState));
     }
-    public boolean getInternetState(){
-       return internetState;
-    }
-    public void fabClicked(byte[] posterBlob ,byte[] backdropBlob ){
-        if (isFavorite.getValue()){
+
+    public void fabClicked(byte[] posterBlob, byte[] backdropBlob) {
+        if (isFavorite.getValue()) {
             deleteFavorite();
-        }else{
-            storeFavorite(posterBlob,backdropBlob);
+        } else {
+            storeFavorite(posterBlob, backdropBlob);
         }
     }
 

@@ -20,30 +20,32 @@ import javax.inject.Inject;
  * Created by 3piCerberus on 14/03/2018.
  */
 
-public class LocalDBContentProvider extends ContentProvider{
+public class LocalDBContentProvider extends ContentProvider {
 
+    public static final String LOG_TAG = LocalDBContentProvider.class.getSimpleName();
     private static final int ITEMS = 100;
     private static final int ITEM_ID = 101;
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-    public static final String LOG_TAG =  LocalDBContentProvider.class.getSimpleName();
 
     static {
         sUriMatcher.addURI(MovieContract.CONTENT_AUTHORITY, MovieContract.PATH_ITEMS, ITEMS);
         sUriMatcher.addURI(MovieContract.CONTENT_AUTHORITY, MovieContract.PATH_ITEMS + "/#", ITEM_ID);
     }
+
     @Inject
     public DbHelper mDbHelper;
 
     @Override
     public boolean onCreate() {
-       // mDbHelper = new DbHelper(getContext());
+        // mDbHelper = new DbHelper(getContext());
         return true;
     }
-//should be called in everymethod it needs the mDbHelper otherwise the injection won't work
-    private void deferInit(){
-       if (mDbHelper==null) {
-           MyApplication.getMyApplication().getMainActivityViewModelComponent().inject(this);
-       }
+
+    //should be called in everymethod it needs the mDbHelper otherwise the injection won't work
+    private void deferInit() {
+        if (mDbHelper == null) {
+            MyApplication.getMyApplication().getMainActivityViewModelComponent().inject(this);
+        }
     }
 
     @Override
@@ -176,12 +178,12 @@ public class LocalDBContentProvider extends ContentProvider{
 
     private int updateItem(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         deferInit();
-       if (values.containsKey(MovieItem.COLUMN_ID)) {
-           Integer movieId = values.getAsInteger(MovieItem.COLUMN_ID);
-           if (movieId != null && movieId < 0) {
-               throw new IllegalArgumentException("Item requires an id");
-           }
-       }
+        if (values.containsKey(MovieItem.COLUMN_ID)) {
+            Integer movieId = values.getAsInteger(MovieItem.COLUMN_ID);
+            if (movieId != null && movieId < 0) {
+                throw new IllegalArgumentException("Item requires an id");
+            }
+        }
         if (values.containsKey(MovieItem.COLUMN_TITLE)) {
             String title = values.getAsString(MovieItem.COLUMN_TITLE);
             if (title == null) {

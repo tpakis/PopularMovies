@@ -20,23 +20,18 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.popularmovies.aithanasakis.popularmovies.MyApplication;
 import com.popularmovies.aithanasakis.popularmovies.R;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieReviews;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieVideos;
-import com.popularmovies.aithanasakis.popularmovies.ui.main.MainActivity;
 import com.popularmovies.aithanasakis.popularmovies.viewmodel.DetailsActivityViewModel;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
@@ -52,6 +47,7 @@ import timber.log.Timber;
 
 public class DetailsActivity extends AppCompatActivity {
 
+    private static final String BUNDLE_MOVIE = "item";
     @BindView(R.id.backdrop)
     ImageView backdrop;
     @BindView(R.id.toolbar)
@@ -66,13 +62,13 @@ public class DetailsActivity extends AppCompatActivity {
     CoordinatorLayout coordinatorLayout;
     @BindString(R.string.MOVIE_DB_BACKDROP_PATH)
     String movieDBImagePath;
-    private Movie selectedMovie;
     NetworkBroadcastReceiver mNetworkReceiver;
     IntentFilter mNetworkIntentFilter;
-    private DetailsActivityViewModel viewModel;
-    private static final String BUNDLE_MOVIE = "item";
     DetailsFragment detailsFragment;
-    Boolean isFavorite=false;
+    Boolean isFavorite = false;
+    private Movie selectedMovie;
+    private DetailsActivityViewModel viewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,7 +81,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         Timber.d("Timber" + selectedMovie.toString());
         if (savedInstanceState == null) {
-           detailsFragment = new DetailsFragment();
+            detailsFragment = new DetailsFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
 
             fragmentManager.beginTransaction()
@@ -104,15 +100,15 @@ public class DetailsActivity extends AppCompatActivity {
         viewModel.getReviewsListObservable().observe(DetailsActivity.this, new Observer<List<MovieReviews>>() {
             @Override
             public void onChanged(@Nullable List<MovieReviews> myMovieItemsList) {
-               if (detailsFragment!=null) {
-                   detailsFragment.setRvReviewsResults(myMovieItemsList);
-               }
+                if (detailsFragment != null) {
+                    detailsFragment.setRvReviewsResults(myMovieItemsList);
+                }
             }
         });
         viewModel.getVideosListObservable().observe(DetailsActivity.this, new Observer<List<MovieVideos>>() {
             @Override
             public void onChanged(@Nullable List<MovieVideos> myMovieItemsList) {
-                if (detailsFragment!=null) {
+                if (detailsFragment != null) {
                     detailsFragment.setRvVideosResults(myMovieItemsList);
                 }
             }
@@ -124,6 +120,10 @@ public class DetailsActivity extends AppCompatActivity {
             }
         });
         viewModel.requestMovieDetails();
+        //setup eplicit broadcast receiver
+        mNetworkIntentFilter = new IntentFilter();
+        mNetworkReceiver = new NetworkBroadcastReceiver();
+        mNetworkIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class DetailsActivity extends AppCompatActivity {
         checkForInternet();
         //load backdrop photo
 
-        if ((!viewModel.getInternetState())&& selectedMovie.getBackdropBlob() !=null) {
+        if ((!viewModel.getInternetState()) && selectedMovie.getBackdropBlob() != null) {
             RequestOptions options = new RequestOptions()
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .centerCrop()
@@ -141,7 +141,7 @@ public class DetailsActivity extends AppCompatActivity {
                     .error(R.mipmap.ic_launcher_round);
             Glide.with(backdrop.getContext()).load(selectedMovie.getBackdropBlob()).apply(options)
                     .into(backdrop);
-        }else{
+        } else {
             RequestOptions options = new RequestOptions()
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .centerCrop()
@@ -153,43 +153,44 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void changeFabIccn(Boolean isFavorite){
+    private void changeFabIccn(Boolean isFavorite) {
         this.isFavorite = isFavorite;
-        if (isFavorite){
+        if (isFavorite) {
             fab.setImageResource(R.drawable.ic_star_black_24dp);
-        }else{
+        } else {
             fab.setImageResource(R.drawable.ic_star_border_black_24dp);
         }
 
     }
+
     private void checkForInternet() {
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         viewModel.setInternetState(netInfo != null && netInfo.isConnectedOrConnecting());
     }
+
+    @OnClick(R.id.fab)
+    public void onFabClicked(View view) {
+        if (detailsFragment != null) {
+            viewModel.fabClicked(imageViewToByte(detailsFragment.detailsPoster), imageViewToByte(backdrop));
+        }
+    }
+
+    private byte[] imageViewToByte(ImageView view) {
+        BitmapDrawable bitmapDrawable = ((BitmapDrawable) view.getDrawable());
+        Bitmap bitmap = bitmapDrawable.getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] imageInByte = stream.toByteArray();
+        return imageInByte;
+    }
+
     private class NetworkBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             checkForInternet();
         }
-    }
-
-    @OnClick(R.id.fab)
-    public void onFabClicked(View view){
-        if (detailsFragment!=null) {
-            viewModel.fabClicked(imageViewToByte(detailsFragment.detailsPoster),imageViewToByte(backdrop));
-
-        }
-    }
-
-    private byte[] imageViewToByte(ImageView view){
-        BitmapDrawable bitmapDrawable = ((BitmapDrawable)  view.getDrawable()) ;
-        Bitmap bitmap = bitmapDrawable .getBitmap();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        byte[] imageInByte = stream.toByteArray();
-        return imageInByte;
     }
 
 }

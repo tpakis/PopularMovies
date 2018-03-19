@@ -16,6 +16,7 @@ public class MovieContract {
     //empty constructor private not to instantiate
     private MovieContract() {
     }
+
     public static final class MovieItem implements BaseColumns {
         public final static String TABLE_NAME = "favorites";
         /**

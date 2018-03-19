@@ -23,13 +23,12 @@ import timber.log.Timber;
 
 public class MainActivityViewModel extends ViewModel {
     private static boolean internetState = false;
-    private String theMovieDBBApiKey;
-
     @Inject
     public PopularMoviesRepository popularRepository;
+    private String theMovieDBBApiKey;
     private MediatorLiveData<List<Movie>> itemsListObservable;
 
-    public MainActivityViewModel () {
+    public MainActivityViewModel() {
         super();
         theMovieDBBApiKey = BuildConfig.THEMOVIEDB_API_KEY;
         itemsListObservable = new MediatorLiveData<>();
@@ -42,13 +41,9 @@ public class MainActivityViewModel extends ViewModel {
                 itemsListObservable.setValue(movies);
             }
         });
-
-     //   popularRepository = PopularMoviesRepository.getInstance();
-
     }
 
     public LiveData<List<Movie>> getMoviesItemsList(String query) {
-     //   popularRepository.getMoviesList(query, theMovieDBBApiKey, internetState).observe(MainActivityViewModel.this,);
         popularRepository.getMoviesList(query, theMovieDBBApiKey, internetState);
 
         return itemsListObservable;

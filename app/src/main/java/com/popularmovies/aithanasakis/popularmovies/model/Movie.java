@@ -5,13 +5,26 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by 3piCerberus on 05/03/2018.
  */
 
 public class Movie implements Parcelable {
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel source) {
+            return new Movie(source);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
     @SerializedName("vote_count")
     @Expose
     private Integer voteCount;
@@ -77,6 +90,26 @@ public class Movie implements Parcelable {
         this.releaseDate = releaseDate;
         this.posterBlob = posterBlob;
         this.backdropBlob = backdropBlob;
+    }
+
+    protected Movie(Parcel in) {
+        this.voteCount = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.id = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.video = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.voteAverage = (Double) in.readValue(Double.class.getClassLoader());
+        this.title = in.readString();
+        this.popularity = (Double) in.readValue(Double.class.getClassLoader());
+        this.posterPath = in.readString();
+        this.originalLanguage = in.readString();
+        this.originalTitle = in.readString();
+        this.genreIds = new ArrayList<Integer>();
+        in.readList(this.genreIds, Integer.class.getClassLoader());
+        this.backdropPath = in.readString();
+        this.adult = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.overview = in.readString();
+        this.releaseDate = in.readString();
+        this.posterBlob = in.createByteArray();
+        this.backdropBlob = in.createByteArray();
     }
 
     public Integer getVoteCount() {
@@ -207,9 +240,6 @@ public class Movie implements Parcelable {
         this.backdropBlob = backdropBlob;
     }
 
-
-
-
     @Override
     public String toString() {
         return "Movie{" +
@@ -256,36 +286,4 @@ public class Movie implements Parcelable {
         dest.writeByteArray(this.posterBlob);
         dest.writeByteArray(this.backdropBlob);
     }
-
-    protected Movie(Parcel in) {
-        this.voteCount = (Integer) in.readValue(Integer.class.getClassLoader());
-        this.id = (Integer) in.readValue(Integer.class.getClassLoader());
-        this.video = (Boolean) in.readValue(Boolean.class.getClassLoader());
-        this.voteAverage = (Double) in.readValue(Double.class.getClassLoader());
-        this.title = in.readString();
-        this.popularity = (Double) in.readValue(Double.class.getClassLoader());
-        this.posterPath = in.readString();
-        this.originalLanguage = in.readString();
-        this.originalTitle = in.readString();
-        this.genreIds = new ArrayList<Integer>();
-        in.readList(this.genreIds, Integer.class.getClassLoader());
-        this.backdropPath = in.readString();
-        this.adult = (Boolean) in.readValue(Boolean.class.getClassLoader());
-        this.overview = in.readString();
-        this.releaseDate = in.readString();
-        this.posterBlob = in.createByteArray();
-        this.backdropBlob = in.createByteArray();
-    }
-
-    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
-        @Override
-        public Movie createFromParcel(Parcel source) {
-            return new Movie(source);
-        }
-
-        @Override
-        public Movie[] newArray(int size) {
-            return new Movie[size];
-        }
-    };
 }

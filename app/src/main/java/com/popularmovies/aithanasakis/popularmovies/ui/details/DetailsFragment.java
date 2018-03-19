@@ -2,6 +2,8 @@ package com.popularmovies.aithanasakis.popularmovies.ui.details;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -42,7 +44,7 @@ import timber.log.Timber;
  */
 
 public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsAdapterOnClickHandler,
-    VideosAdapter.VideosAdapterOnClickHandler{
+        VideosAdapter.VideosAdapterOnClickHandler {
 
     @BindView(R.id.details_poster)
     ImageView detailsPoster;
@@ -82,6 +84,7 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
     private VideosAdapter mVideosAdapter;
     private LinearLayoutManager mLinearLayoutManager;
     private LinearLayoutManager mLinearLayoutManagerVideos;
+
     public DetailsFragment() {
 
     }
@@ -97,14 +100,14 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-       //getting the selected movie from the details activity viewmodel
+        //getting the selected movie from the details activity viewmodel
 
         selectedMovie = viewModel.getSelectedMovie();
         View viewgroup = inflater.inflate(R.layout.details_fragment, container, false);
         unbinder = ButterKnife.bind(this, viewgroup);
         detailsTitle.setText(selectedMovie.getTitle());
 
-        if ((!viewModel.getInternetState())&& selectedMovie.getPosterBlob() !=null) {
+        if ((!viewModel.getInternetState()) && selectedMovie.getPosterBlob() != null) {
             RequestOptions options = new RequestOptions()
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .centerCrop()
@@ -113,7 +116,7 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
                     .error(R.mipmap.ic_launcher_round);
             Glide.with(detailsPoster.getContext()).load(selectedMovie.getPosterBlob()).apply(options)
                     .into(detailsPoster);
-        }else{
+        } else {
             RequestOptions options = new RequestOptions()
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .centerCrop()
@@ -124,19 +127,19 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
                     .into(detailsPoster);
         }
 
-        detailsRatingbar.setRating( selectedMovie.getVoteAverage().floatValue());
+        detailsRatingbar.setRating(selectedMovie.getVoteAverage().floatValue());
         detailsRating.setText("tmdb Rating: " + selectedMovie.getVoteAverage().toString());
-        detailsVotes.setText("Votes: "+selectedMovie.getVoteCount().toString());
-        detailsReleaseDate.setText("Release Date: "+selectedMovie.getReleaseDate());
+        detailsVotes.setText("Votes: " + selectedMovie.getVoteCount().toString());
+        detailsReleaseDate.setText("Release Date: " + selectedMovie.getReleaseDate());
         detailsOverviewText.setText(selectedMovie.getOverview());
 
         //recyclerview Reviews,Videos
         mLinearLayoutManager = new LinearLayoutManager(getContext());
         mLinearLayoutManagerVideos = new LinearLayoutManager(getContext(),
-                LinearLayoutManager.HORIZONTAL,false);
+                LinearLayoutManager.HORIZONTAL, false);
         detailsReviewsRv.setLayoutManager(mLinearLayoutManager);
         detailsVideosRv.setLayoutManager(mLinearLayoutManagerVideos);
-        mVideosAdapter = new VideosAdapter(DetailsFragment.this,getContext());
+        mVideosAdapter = new VideosAdapter(DetailsFragment.this, getContext());
         mReviewsAdapter = new ReviewsAdapter(DetailsFragment.this);
         detailsVideosRv.setAdapter(mVideosAdapter);
         detailsReviewsRv.setAdapter(mReviewsAdapter);
@@ -152,17 +155,26 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
 
     @Override
     public void onClick(MovieReviews selectedReviewItem) {
-
+        if (selectedReviewItem.getUrl() != null) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(selectedReviewItem.getUrl()));
+            startActivity(intent);
+        }
     }
+
     @Override
     public void onClick(MovieVideos selectedVideoItem) {
-
+        if (selectedVideoItem.getKey() != null) {
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://www.youtube.com/watch?v=" + selectedVideoItem.getKey()));
+            startActivity(intent);
+        }
     }
 
-    public void setRvReviewsResults(@Nullable List<MovieReviews> myMovieItemsList){
+    public void setRvReviewsResults(@Nullable List<MovieReviews> myMovieItemsList) {
         mReviewsAdapter.setReviewsResults(myMovieItemsList);
     }
-    public void setRvVideosResults(@Nullable List<MovieVideos> myMovieItemsList){
+
+    public void setRvVideosResults(@Nullable List<MovieVideos> myMovieItemsList) {
         mVideosAdapter.setVideosResults(myMovieItemsList);
     }
 }
