@@ -2,19 +2,14 @@ package com.popularmovies.aithanasakis.popularmovies.repository;
 
 
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.ContentValues;
-
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.popularmovies.aithanasakis.popularmovies.MyApplication;
-import com.popularmovies.aithanasakis.popularmovies.data.MovieContract;
+import com.popularmovies.aithanasakis.popularmovies.R;
 import com.popularmovies.aithanasakis.popularmovies.data.MovieContract.MovieItem;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieDBResponse;
@@ -25,7 +20,9 @@ import com.popularmovies.aithanasakis.popularmovies.model.MovieVideos;
 import com.popularmovies.aithanasakis.popularmovies.network.MovieDBService;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -46,16 +43,25 @@ public class PopularMoviesRepository {
     private MutableLiveData<List<Movie>> moviesListObservable = new MutableLiveData<List<Movie>>();
     private MutableLiveData<List<MovieVideos>> movieVideosObservable = new MutableLiveData<List<MovieVideos>>();
     private MutableLiveData<List<MovieReviews>> movieReviewsObservable = new MutableLiveData<List<MovieReviews>>();
-
+    private static final String SORT_BY_POPULARITY = "popular";
+    private static final String SORT_BY_RATING = "top_rated";
+    private static final String SORT_BY_FAVORITE = "favorites";
+    Map queriesFromId = new Hashtable<Integer,String>();
     //room to be implemented
     //private MovieDBDAO mMovieDBDAO;
     @Inject
     public PopularMoviesRepository(MovieDBService mMovieDBService) {
         this.mMovieDBService = mMovieDBService;
-
+        queriesFromId.put(R.id.sort_by_favorites,SORT_BY_FAVORITE);
+        queriesFromId.put(R.id.sort_by_popularity,SORT_BY_POPULARITY);
+        queriesFromId.put(R.id.sort_by_rating,SORT_BY_RATING);
     }
 
-
+    /** Method to check from the content provider whether a movie is favorite or not
+     * Very quick
+     * @param movie
+     * @return
+     */
     public Boolean isFavorite(Movie movie) {
         Uri uri = Uri.withAppendedPath(MovieItem.CONTENT_URI, movie.getId().toString());
         String[] projection = {
@@ -69,11 +75,18 @@ public class PopularMoviesRepository {
         }
     }
 
+    /**
+     * deletes a favorite movie
+     * @param movie
+     */
     public void deleteFavorite(Movie movie) {
         Uri uri = Uri.withAppendedPath(MovieItem.CONTENT_URI, movie.getId().toString());
         MyApplication.getAppContext().getContentResolver().delete(uri, "", null);
     }
-
+    /**
+     * Stores a new favorite movie
+     * @param movie
+     */
     public void storeFavorite(Movie movie) {
         int id = movie.getId();
         String title = movie.getTitle();
@@ -148,7 +161,10 @@ public class PopularMoviesRepository {
         });
 
     }
-
+    /**
+     * This method calls for Reviews data from the internet and refreshes the livedata by
+     * calling setLiveDataReviews() method
+     */
     public void getMovieReviewsFromWeb(int movieId, String apiKey) {
         mMovieDBService.getMovieReviews(movieId, apiKey).enqueue(new Callback<MovieDBReviewsResponse>() {
             List<MovieReviews> items = new ArrayList<MovieReviews>();
@@ -168,7 +184,10 @@ public class PopularMoviesRepository {
         });
 
     }
-
+    /**
+     * This method calls for Videos data from the internet and refreshes the livedata by
+     * calling setLiveDataVideos() method
+     */
     public void getMovieVideosFromWeb(int movieId, String apiKey) {
         mMovieDBService.getMovieVideos(movieId, apiKey).enqueue(new Callback<MovieDBVideosResponse>() {
             List<MovieVideos> items = new ArrayList<MovieVideos>();
@@ -189,6 +208,10 @@ public class PopularMoviesRepository {
 
     }
 
+    /**
+     * This method calls for data from the content provider and refreshes the livedata by
+     * calling setLiveData() method
+     */
     @SuppressLint("StaticFieldLeak")
     private void getItemsListFromDB() {
         new AsyncTask<Void, Void, Cursor>() {
@@ -249,6 +272,10 @@ public class PopularMoviesRepository {
         }.execute();
     }
 
+    /**
+     *
+     * @return The list we should observe for movies
+     */
     public MutableLiveData<List<Movie>> getLiveData() {
         return moviesListObservable;
     }
@@ -257,6 +284,10 @@ public class PopularMoviesRepository {
         moviesListObservable.setValue(entries);
     }
 
+    /**
+     *
+     * @return The list we should observe for movie Videos
+     */
     public MutableLiveData<List<MovieVideos>> getLiveDataVideos() {
         return movieVideosObservable;
     }
@@ -265,6 +296,10 @@ public class PopularMoviesRepository {
         movieVideosObservable.setValue(entries);
     }
 
+    /**
+     *
+     * @return The list we should observe for movie Reviews
+     */
     public MutableLiveData<List<MovieReviews>> getLiveDataReviews() {
         return movieReviewsObservable;
     }
@@ -273,17 +308,13 @@ public class PopularMoviesRepository {
         movieReviewsObservable.setValue(entries);
     }
 
-    public void getMoviesList(String query, String apiKey, boolean internetState) {
-        if (query.equals("favorites")) {
-            getItemsListFromDB();
-
-        }
-        if (internetState) {
-            getItemsListFromWeb(query, apiKey);
-        } else {
-            //it will call getListFromDB
-            //  return getItemsListFromWeb(query,apiKey);
-            //     return getItemsListFromDB("%" + query + "%");
+    public void getMoviesList(int sortParam, String apiKey, boolean internetState) {
+        switch (sortParam) {
+            case R.id.sort_by_favorites:
+                getItemsListFromDB();
+                break;
+            default:
+                getItemsListFromWeb((String)queriesFromId.get(sortParam), apiKey);
         }
     }
 }

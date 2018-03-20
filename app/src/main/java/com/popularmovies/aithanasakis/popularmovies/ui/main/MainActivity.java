@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +37,7 @@ import com.thanosfisherman.mayi.Mayi;
 import com.thanosfisherman.mayi.PermissionBean;
 import com.thanosfisherman.mayi.PermissionToken;
 
+import java.security.KeyStore;
 import java.util.List;
 
 import butterknife.BindView;
@@ -44,10 +46,9 @@ import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, StaggeredMoviesAdapter.MovieDBResultsAdapterOnClickHandler {
 
-    private static final String SORT_BY_POPULARITY = "popular";
-    private static final String SORT_BY_RATING = "top_rated";
-    private static final String SORT_BY_FAVORITE = "favorites";
+
     private static final String BUNDLE_MOVIE = "item";
+    private static final String TITLE_SAVE_STATE = "title";
     @BindView(R.id.rv_results)
     public RecyclerView rvMovies;
     @BindView(R.id.todo_list_empty_view)
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private MainActivityViewModel viewModel;
     private StaggeredMoviesAdapter mMoviesAdapter;
     private StaggeredGridLayoutManager mStaggeredGridLayoutManager;
+    private String lastLoadedSort;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,21 +155,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         int stringId=R.string.sort_by_popularity;
-        switch (id) {
-            case R.id.sort_by_popularity:
-                stringId = R.string.sort_by_popularity;
-                callForData(SORT_BY_POPULARITY);
-                break;
-            case R.id.sort_by_rating:
-                stringId = R.string.sort_by_rating;
-                callForData(SORT_BY_RATING);
-                break;
-            case R.id.sort_by_favorites:
-                stringId = R.string.sort_by_favorites;
-                callForData(SORT_BY_FAVORITE);
-                break;
-        }
-        setTitle(stringId);
+       if (id!=LocalPreferences.getSortParameter(this)) {
+           switch (id) {
+               case R.id.sort_by_popularity:
+                   stringId = R.string.sort_by_popularity;
+                   break;
+               case R.id.sort_by_rating:
+                   stringId = R.string.sort_by_rating;
+                   break;
+               case R.id.sort_by_favorites:
+                   stringId = R.string.sort_by_favorites;
+                   break;
+           }
+           callForData(id);
+           setTitle(stringId);
+       }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -188,6 +191,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(TITLE_SAVE_STATE,getTitle().toString());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        setTitle(savedInstanceState.getString(TITLE_SAVE_STATE));
+    }
+
+    @Override
     public void onClick(Movie selectedMovieItem) {
         Context context = this;
         Intent intent = new Intent(context, DetailsActivity.class);
@@ -196,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     //initialize a call for data from the viewmodel
-    private void callForData(String sortParameter) {
+    private void callForData(int sortParameter) {
         viewModel.getMoviesItemsList(sortParameter);
         LocalPreferences.setSortParameter(sortParameter, this);
     }

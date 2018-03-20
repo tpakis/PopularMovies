@@ -35,6 +35,7 @@ public class MainActivityViewModel extends ViewModel {
 
 
         MyApplication.getMyApplication().getMainActivityViewModelComponent().inject(this);
+        //livedata observer of the repository
         itemsListObservable.addSource(popularRepository.getLiveData(), new Observer<List<Movie>>() {
             @Override
             public void onChanged(@Nullable List<Movie> movies) {
@@ -42,12 +43,9 @@ public class MainActivityViewModel extends ViewModel {
             }
         });
     }
-
-    public LiveData<List<Movie>> getMoviesItemsList(String query) {
-        popularRepository.getMoviesList(query, theMovieDBBApiKey, internetState);
-
-        return itemsListObservable;
-
+    // request the repository to update it's data which we observer
+    public void getMoviesItemsList(int sortParam) {
+        popularRepository.getMoviesList(sortParam, theMovieDBBApiKey, internetState);
     }
 
     public void setInternetState(boolean internetState) {
@@ -55,6 +53,10 @@ public class MainActivityViewModel extends ViewModel {
         Timber.v(String.valueOf(internetState));
     }
 
+    /**
+     *
+     * @return The list that we should observe
+     */
     public LiveData<List<Movie>> getItemsListObservable() {
         return itemsListObservable;
     }

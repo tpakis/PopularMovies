@@ -33,6 +33,7 @@ public class DetailsActivityViewModel extends ViewModel {
     @Inject
     public PopularMoviesRepository popularRepository;
     private MutableLiveData<Boolean> isFavorite = new MutableLiveData<>();
+    //mediator lists because they transfer the changes of the livedata lists of the repository
     private MediatorLiveData<List<MovieVideos>> videosListObservable;
     private MediatorLiveData<List<MovieReviews>> reviewsListObservable;
 
@@ -79,16 +80,23 @@ public class DetailsActivityViewModel extends ViewModel {
         isFavorite.postValue(popularRepository.isFavorite(selectedMovie));
 
     }
-
+    // request the repository to update it's data which we observer
     public void requestMovieDetails() {
         popularRepository.getMovieReviewsFromWeb(selectedMovie.getId(), BuildConfig.THEMOVIEDB_API_KEY);
         popularRepository.getMovieVideosFromWeb(selectedMovie.getId(), BuildConfig.THEMOVIEDB_API_KEY);
     }
 
+    /**
+     *
+     * @return The list we should observer
+     */
     public LiveData<List<MovieVideos>> getVideosListObservable() {
         return videosListObservable;
     }
-
+    /**
+     *
+     * @return The list we should observer
+     */
     public LiveData<List<MovieReviews>> getReviewsListObservable() {
 
         return reviewsListObservable;

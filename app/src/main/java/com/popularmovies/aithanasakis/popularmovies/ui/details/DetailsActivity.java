@@ -131,7 +131,7 @@ public class DetailsActivity extends AppCompatActivity {
         super.onResume();
         checkForInternet();
         //load backdrop photo
-
+        //check to load pictures from blob when there is no internet connection and there is stored blob
         if ((!viewModel.getInternetState()) && selectedMovie.getBackdropBlob() != null) {
             RequestOptions options = new RequestOptions()
                     .diskCacheStrategy(DiskCacheStrategy.NONE)

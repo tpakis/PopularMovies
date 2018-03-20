@@ -1,6 +1,5 @@
 package com.popularmovies.aithanasakis.popularmovies.ui.details;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
@@ -10,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,12 +21,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.popularmovies.aithanasakis.popularmovies.R;
 import com.popularmovies.aithanasakis.popularmovies.adapter.ReviewsAdapter;
-import com.popularmovies.aithanasakis.popularmovies.adapter.StaggeredMoviesAdapter;
 import com.popularmovies.aithanasakis.popularmovies.adapter.VideosAdapter;
 import com.popularmovies.aithanasakis.popularmovies.model.Movie;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieReviews;
 import com.popularmovies.aithanasakis.popularmovies.model.MovieVideos;
-import com.popularmovies.aithanasakis.popularmovies.ui.main.MainActivity;
 import com.popularmovies.aithanasakis.popularmovies.viewmodel.DetailsActivityViewModel;
 
 import java.util.List;
@@ -37,7 +33,6 @@ import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import timber.log.Timber;
 
 /**
  * Created by 3piCerberus on 06/03/2018.
@@ -106,7 +101,7 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
         View viewgroup = inflater.inflate(R.layout.details_fragment, container, false);
         unbinder = ButterKnife.bind(this, viewgroup);
         detailsTitle.setText(selectedMovie.getTitle());
-
+        //check to load pictures from blob when there is no internet connection and there is stored blob
         if ((!viewModel.getInternetState()) && selectedMovie.getPosterBlob() != null) {
             RequestOptions options = new RequestOptions()
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
@@ -143,7 +138,6 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
         mReviewsAdapter = new ReviewsAdapter(DetailsFragment.this);
         detailsVideosRv.setAdapter(mVideosAdapter);
         detailsReviewsRv.setAdapter(mReviewsAdapter);
-
         return viewgroup;
     }
 
