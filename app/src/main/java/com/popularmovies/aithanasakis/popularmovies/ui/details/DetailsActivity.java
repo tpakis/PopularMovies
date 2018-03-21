@@ -80,14 +80,14 @@ public class DetailsActivity extends AppCompatActivity {
         viewModel.setSelectedMovie(selectedMovie);
 
         Timber.d("Timber" + selectedMovie.toString());
-        if (savedInstanceState == null) {
+
             detailsFragment = new DetailsFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
 
             fragmentManager.beginTransaction()
                     .add(R.id.details_fragment_container, detailsFragment)
                     .commit();
-        }
+
         //change toolbar
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -119,7 +119,9 @@ public class DetailsActivity extends AppCompatActivity {
                 changeFabIccn(isFavorite);
             }
         });
-        viewModel.requestMovieDetails();
+       if (savedInstanceState==null) {
+           viewModel.requestMovieDetails();
+       }
         //setup eplicit broadcast receiver
         mNetworkIntentFilter = new IntentFilter();
         mNetworkReceiver = new NetworkBroadcastReceiver();

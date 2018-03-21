@@ -89,7 +89,11 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
         super.onCreate(savedInstanceState);
         parent = (DetailsActivity) this.getActivity();
         viewModel = ViewModelProviders.of(parent).get(DetailsActivityViewModel.class);
-
+        mLinearLayoutManager = new LinearLayoutManager(getContext());
+        mLinearLayoutManagerVideos = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL, false);
+        mVideosAdapter = new VideosAdapter(DetailsFragment.this, getContext());
+        mReviewsAdapter = new ReviewsAdapter(DetailsFragment.this);
     }
 
     @Nullable
@@ -129,13 +133,8 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
         detailsOverviewText.setText(selectedMovie.getOverview());
 
         //recyclerview Reviews,Videos
-        mLinearLayoutManager = new LinearLayoutManager(getContext());
-        mLinearLayoutManagerVideos = new LinearLayoutManager(getContext(),
-                LinearLayoutManager.HORIZONTAL, false);
         detailsReviewsRv.setLayoutManager(mLinearLayoutManager);
         detailsVideosRv.setLayoutManager(mLinearLayoutManagerVideos);
-        mVideosAdapter = new VideosAdapter(DetailsFragment.this, getContext());
-        mReviewsAdapter = new ReviewsAdapter(DetailsFragment.this);
         detailsVideosRv.setAdapter(mVideosAdapter);
         detailsReviewsRv.setAdapter(mReviewsAdapter);
         return viewgroup;
