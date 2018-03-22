@@ -85,7 +85,7 @@ public class DetailsActivity extends AppCompatActivity {
             FragmentManager fragmentManager = getSupportFragmentManager();
 
             fragmentManager.beginTransaction()
-                    .add(R.id.details_fragment_container, detailsFragment)
+                    .replace(R.id.details_fragment_container, detailsFragment)
                     .commit();
 
         //change toolbar
@@ -153,6 +153,7 @@ public class DetailsActivity extends AppCompatActivity {
             Glide.with(backdrop.getContext()).load(movieDBImagePath + selectedMovie.getBackdropPath()).apply(options)
                     .into(backdrop);
         }
+
     }
 
     private void changeFabIccn(Boolean isFavorite) {

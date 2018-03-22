@@ -4,11 +4,13 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,6 +96,7 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
                 LinearLayoutManager.HORIZONTAL, false);
         mVideosAdapter = new VideosAdapter(DetailsFragment.this, getContext());
         mReviewsAdapter = new ReviewsAdapter(DetailsFragment.this);
+
     }
 
     @Nullable
@@ -105,6 +108,7 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
         View viewgroup = inflater.inflate(R.layout.details_fragment, container, false);
         unbinder = ButterKnife.bind(this, viewgroup);
         detailsTitle.setText(selectedMovie.getTitle());
+
         //check to load pictures from blob when there is no internet connection and there is stored blob
         if ((!viewModel.getInternetState()) && selectedMovie.getPosterBlob() != null) {
             RequestOptions options = new RequestOptions()
@@ -131,12 +135,12 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
         detailsVotes.setText("Votes: " + selectedMovie.getVoteCount().toString());
         detailsReleaseDate.setText("Release Date: " + selectedMovie.getReleaseDate());
         detailsOverviewText.setText(selectedMovie.getOverview());
-
-        //recyclerview Reviews,Videos
+//recyclerview Reviews,Videos
         detailsReviewsRv.setLayoutManager(mLinearLayoutManager);
         detailsVideosRv.setLayoutManager(mLinearLayoutManagerVideos);
         detailsVideosRv.setAdapter(mVideosAdapter);
         detailsReviewsRv.setAdapter(mReviewsAdapter);
+
         return viewgroup;
     }
 
@@ -144,6 +148,7 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+
     }
 
     @Override
@@ -164,10 +169,25 @@ public class DetailsFragment extends Fragment implements ReviewsAdapter.ReviewsA
     }
 
     public void setRvReviewsResults(@Nullable List<MovieReviews> myMovieItemsList) {
-        mReviewsAdapter.setReviewsResults(myMovieItemsList);
+
+            mReviewsAdapter.setReviewsResults(myMovieItemsList);
+            mLinearLayoutManager.scrollToPosition(viewModel.getReviewsRvScrollPosition());
+
     }
 
     public void setRvVideosResults(@Nullable List<MovieVideos> myMovieItemsList) {
         mVideosAdapter.setVideosResults(myMovieItemsList);
+        mLinearLayoutManagerVideos.scrollToPosition(viewModel.getVideosRvScrollPosition());
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //instead of saving the state here with the bundle I use two fields in the viewmodel,
+        //because the onCreateView method is called twice in every rotation and loses the savedState
+        //known issue multiple asked multiple times on stackedoverflow, only work arounds found
+        //different than this
+        viewModel.setVideosRvScrollPosition(mLinearLayoutManagerVideos.findFirstVisibleItemPosition());
+        viewModel.setReviewsRvScrollPosition(mLinearLayoutManager.findFirstVisibleItemPosition());
     }
 }

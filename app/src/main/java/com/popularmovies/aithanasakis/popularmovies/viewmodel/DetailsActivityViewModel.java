@@ -17,6 +17,7 @@ import com.popularmovies.aithanasakis.popularmovies.repository.PopularMoviesRepo
 import java.util.List;
 
 import android.arch.lifecycle.Observer;
+import android.util.Log;
 
 import javax.inject.Inject;
 
@@ -32,6 +33,8 @@ public class DetailsActivityViewModel extends ViewModel {
     private static Movie selectedMovie;
     @Inject
     public PopularMoviesRepository popularRepository;
+    private int videosRvScrollPosition;
+    private int reviewsRvScrollPosition;
     private MutableLiveData<Boolean> isFavorite = new MutableLiveData<>();
     //mediator lists because they transfer the changes of the livedata lists of the repository
     private MediatorLiveData<List<MovieVideos>> videosListObservable;
@@ -56,6 +59,22 @@ public class DetailsActivityViewModel extends ViewModel {
                 reviewsListObservable.setValue(reviews);
             }
         });
+    }
+
+    public int getVideosRvScrollPosition() {
+        return videosRvScrollPosition;
+    }
+
+    public void setVideosRvScrollPosition(int moviesRvScrollPosition) {
+        this.videosRvScrollPosition = moviesRvScrollPosition;
+    }
+
+    public int getReviewsRvScrollPosition() {
+        return reviewsRvScrollPosition;
+    }
+
+    public void setReviewsRvScrollPosition(int reviewsRvScrollPosition) {
+        this.reviewsRvScrollPosition = reviewsRvScrollPosition;
     }
 
     public void storeFavorite(byte[] posterBlob, byte[] backdropBlob) {
